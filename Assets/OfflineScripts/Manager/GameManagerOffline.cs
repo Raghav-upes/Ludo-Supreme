@@ -1,0 +1,478 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameManagerOffline : MonoBehaviour
+{
+    public static GameManagerOffline gm;
+    public OfflineRollingDice dice;
+
+    public int numberOfStepsToMove;
+    public bool canPlayerMove = true;
+    public bool canDiceRoll = true;
+    public bool transferdice=false;
+    public bool selfDice=false;
+
+    public int redOutPlayers;
+    public int greenOutPlayers;
+    public int blueOutPlayers;
+    public int yellowOutPlayers;
+
+
+    public TMP_Text RedPlayerName;
+    public TMP_Text BluePlayerName;
+    public TMP_Text YellowPlayerName;
+    public TMP_Text GreenPlayerName;
+
+    public GameObject LudoPath;
+
+
+    public int redCompletePlayers;
+    public int greenCompletePlayers;
+    public int blueCompletePlayers;
+    public int yellowCompletePlayers;
+
+    public GameObject RedRollDiceHome;
+    public GameObject BlueRollDiceHome;
+    public GameObject YellowRollDiceHome;
+    public GameObject GreenRollDiceHome;
+
+
+    public GameObject PlayersUI;
+    public GameObject Board;
+
+    public GameObject OrangeCanvasTemp;
+
+
+    public OfflinePlayerPiece[] bluePlayerPiece;
+    public OfflinePlayerPiece[] redPlayerPiece;
+    public OfflinePlayerPiece[] greenPlayerPiece;
+    public OfflinePlayerPiece[] yelloPlayerPiece;
+
+    public int totalPlayerCanPlay;
+
+    public OfflineRollingDice[] ManageRollingDice;
+
+    OfflineUIManagerTwo offlineUIManagerTwo;
+    OfflineUIManagerFour offlineUIManagerFour;
+    OfflineUIManagerThree offlineUIManagerThree;
+    List<OfflinePathPoint> playerOnPathPointList = new List<OfflinePathPoint>();
+    private void Awake()
+    {
+        gm = this;
+      offlineUIManagerTwo=GameObject.FindGameObjectWithTag("UIManager").GetComponent<OfflineUIManagerTwo>();
+        offlineUIManagerFour = GameObject.FindGameObjectWithTag("UIManager").GetComponent<OfflineUIManagerFour>();
+        offlineUIManagerThree = GameObject.FindGameObjectWithTag("UIManager").GetComponent<OfflineUIManagerThree>();
+        if (offlineUIManagerTwo.enabled)
+        {
+            RedPlayerName.text = offlineUIManagerTwo.RedName;
+            BluePlayerName.text = offlineUIManagerTwo.BlueName;
+            GreenPlayerName.text = offlineUIManagerTwo.GreenName;
+            YellowPlayerName.text = offlineUIManagerTwo.YellowName;
+            if (offlineUIManagerTwo.gameMode == 0)
+            {
+                GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(false);
+                GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(true);
+                RedRollDiceHome.SetActive(false);
+                YellowRollDiceHome.SetActive(false);
+                HidePlayers(GameManagerOffline.gm.redPlayerPiece);
+                HidePlayers(GameManagerOffline.gm.yelloPlayerPiece);
+                GameManagerOffline.gm.totalPlayerCanPlay = 2;
+                boardSetUP(0);
+            }
+            else
+            {
+                BlueRollDiceHome.SetActive(false);
+                GreenRollDiceHome.SetActive(false);
+                HidePlayers(GameManagerOffline.gm.bluePlayerPiece);
+                HidePlayers(GameManagerOffline.gm.greenPlayerPiece);
+                boardSetUP(1);
+                GameManagerOffline.gm.totalPlayerCanPlay = 2;
+
+            }
+        }
+        else if (offlineUIManagerFour.enabled)
+        {
+            GameManagerOffline.gm.totalPlayerCanPlay = 4;
+            RedPlayerName.text = offlineUIManagerFour.RedName;
+            BluePlayerName.text = offlineUIManagerFour.BlueName;
+            GreenPlayerName.text = offlineUIManagerFour.GreenName;
+            YellowPlayerName.text = offlineUIManagerFour.YellowName;
+        }
+        else if(offlineUIManagerThree.enabled)
+        {
+            GameManagerOffline.gm.totalPlayerCanPlay = 3;
+            if (offlineUIManagerThree.RedName == "PLON")
+            {
+                HidePlayers(GameManagerOffline.gm.redPlayerPiece);
+                RedRollDiceHome.SetActive(false);
+                boardSetUP(0);
+                GameManagerOffline.gm.ManageRollingDice[0].isAllowed = false;
+                GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(true);
+                GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(false);
+            }
+            else if (offlineUIManagerThree.BlueName == "PLON")
+            {
+                HidePlayers(GameManagerOffline.gm.bluePlayerPiece);
+                BlueRollDiceHome.SetActive(false);
+                GameManagerOffline.gm.ManageRollingDice[1].isAllowed = false;
+            }
+            else if (offlineUIManagerThree.GreenName == "PLON")
+            {
+                HidePlayers(GameManagerOffline.gm.greenPlayerPiece);
+                GreenRollDiceHome.SetActive(false);
+                GameManagerOffline.gm.ManageRollingDice[3].isAllowed = false;
+
+            }
+            else if (offlineUIManagerThree.YellowName == "PLON")
+            {
+                HidePlayers(GameManagerOffline.gm.yelloPlayerPiece);
+                YellowRollDiceHome.SetActive(false);
+                GameManagerOffline.gm.ManageRollingDice[2].isAllowed = false;
+            }
+            RedPlayerName.text = offlineUIManagerThree.RedName;
+            BluePlayerName.text = offlineUIManagerThree.BlueName;
+            GreenPlayerName.text = offlineUIManagerThree.GreenName;
+            YellowPlayerName.text = offlineUIManagerThree.YellowName;
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            redPlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(redPlayerPiece[i].name)].transform.position;
+            bluePlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(bluePlayerPiece[i].name)].transform.position;
+            yelloPlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(yelloPlayerPiece[i].name)].transform.position;
+            greenPlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(greenPlayerPiece[i].name)].transform.position;
+        }
+    }
+
+
+    public int BasePointPosition(string name)
+    {
+
+        for (int i = 0; i < LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint.Length; i++)
+        {
+            if (LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[i].name == name)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void HidePlayers(OfflinePlayerPiece[] playerPieces)
+    {
+        for (int i = 0; i < playerPieces.Length; i++)
+        {
+            playerPieces[i].gameObject.SetActive(false);
+        }
+    }
+
+    public void AddPathPoint(OfflinePathPoint OfflinePathPoint)
+    {
+        playerOnPathPointList.Add(OfflinePathPoint);
+    }
+
+    public void RemovePathPoint(OfflinePathPoint OfflinePathPoint)
+    {
+        if (playerOnPathPointList.Contains(OfflinePathPoint))
+        {
+            playerOnPathPointList.Remove(OfflinePathPoint);
+        }
+        else
+        {
+            Debug.Log("Path Not found to be romved");
+        }
+    }
+
+
+    public void RollingDiceManager()
+    {
+       
+        if (GameManagerOffline.gm.transferdice)
+        {
+            if (GameManagerOffline.gm.numberOfStepsToMove != 6)
+            {
+                ShiftDice();
+            }
+          
+           /* for(int i = 0; i < 4; i++)
+            {
+                if (i == 3)
+                {
+                    nextDice = 0;
+                }
+                else
+                {
+                    nextDice = i + 1;
+                }
+                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i]){
+
+                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
+                }
+            }*/
+            GameManagerOffline.gm.canDiceRoll = true;
+        }
+        else
+        {
+            if (GameManagerOffline.gm.selfDice)
+            {
+                GameManagerOffline.gm.selfDice = false;
+                GameManagerOffline.gm.canDiceRoll = true;
+                GameManagerOffline.gm.SelfRoll();
+            }
+        }
+    }
+
+    public void SelfRoll()
+    {
+        if (GameManagerOffline.gm.totalPlayerCanPlay == 1 && GameManagerOffline.gm.dice== GameManagerOffline.gm.ManageRollingDice[2])
+        {
+            Invoke("roled", 0.6f);
+        }
+    }
+
+    void roled()
+    {
+        GameManagerOffline.gm.ManageRollingDice[2].mouseRoll();
+    }
+
+    void ShiftDice()
+    {
+        int nextDice;
+        if (GameManagerOffline.gm.totalPlayerCanPlay == 1)
+        {
+            if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[0])
+            {
+                GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(false);
+                GameManagerOffline.gm.ManageRollingDice[2].gameObject.SetActive(true);
+                passout(0);
+                GameManagerOffline.gm.ManageRollingDice[2].mouseRoll();
+            }
+            else
+            {
+
+                GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(true);
+                GameManagerOffline.gm.ManageRollingDice[2].gameObject.SetActive(false);
+                passout(2);
+
+            }
+        }
+        else if (GameManagerOffline.gm.totalPlayerCanPlay == 2)
+        {
+
+            if (offlineUIManagerTwo.gameMode == 0)
+            {
+                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[1])
+                {
+                    GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[3].gameObject.SetActive(true);
+                    passout(0);
+                }
+                else
+                {
+
+                    GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(true);
+                    GameManagerOffline.gm.ManageRollingDice[3].gameObject.SetActive(false);
+                    passout(2);
+
+                }
+            }
+            else
+            {
+
+
+                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[0])
+                {
+                    GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[2].gameObject.SetActive(true);
+                    passout(0);
+                }
+                else
+                {
+
+                    GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(true);
+                    GameManagerOffline.gm.ManageRollingDice[2].gameObject.SetActive(false);
+                    passout(2);
+
+                }
+
+            }
+            
+        }
+        else if (GameManagerOffline.gm.totalPlayerCanPlay == 3)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                
+                if (i == 3)
+                {
+                    nextDice = 0;
+                }
+                else
+                {
+                    nextDice = i + 1;
+                }
+                if(i==3 && offlineUIManagerThree.RedName == "PLON")
+                {
+                    nextDice = 1;
+                }
+               if(!GameManagerOffline.gm.ManageRollingDice[i].isAllowed && offlineUIManagerThree.RedName!="PLON")
+                {
+                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
+                    return;
+                }
+              /* else if (i == 0 && offlineUIManagerThree.RedName == "PLON")
+                {
+                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(true);
+                }*/
+
+
+                i = passout(i);
+                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i])
+                {
+
+                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
+                }
+            }
+        }
+        else if (GameManagerOffline.gm.totalPlayerCanPlay == 4)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (i == 3)
+                {
+                    nextDice = 0;
+                }
+                else
+                {
+                    nextDice = i + 1;
+                }
+                i = passout(i);
+
+           
+                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i])
+                {
+
+                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
+                    GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+
+    int passout(int index)
+    {
+        if (index == 0)
+        {
+           if(GameManagerOffline.gm.redCompletePlayers == 4)
+            {
+                return index + 1;
+            }
+        }
+        else if (index == 1)
+        {
+            if (GameManagerOffline.gm.redCompletePlayers == 4)
+            {
+                return index + 1;
+            }
+        }
+       else if (index == 2)
+        {
+            if (GameManagerOffline.gm.redCompletePlayers == 4)
+            {
+                return index + 1;
+            }
+        }
+        else if (index == 3)
+        {
+            if (GameManagerOffline.gm.redCompletePlayers == 4)
+            {
+                return index + 1;
+            }
+        }
+        return index;
+    }
+
+
+
+    public void boardSetUP(int number)
+    {
+        if(number==0)
+        {
+            Board.transform.localEulerAngles = new Vector3(0, 0, -90f);
+            LudoPath.transform.localEulerAngles = new Vector3(0, 0, -90f);
+            OrangeCanvasTemp.transform.localEulerAngles = new Vector3(0, 0, 0);
+            var temp = redPlayerPiece[0].transform.parent.transform.localPosition;
+            GameObject lp = new GameObject();
+            GameObject lp1 = new GameObject();
+            GameObject lp2 = new GameObject();
+            GameObject lp3 = new GameObject();
+            GameObject lp4 = new GameObject();
+            GameObject lp5 = new GameObject();
+            lp1.transform.parent = lp.transform;
+            lp2.transform.parent = lp.transform;
+            lp3.transform.parent = lp.transform;
+            lp4.transform.parent = lp.transform;
+            lp5.transform.parent = lp.transform;
+            ExchangeProperties(lp.transform, redPlayerPiece[0].transform.parent);
+            redPlayerPiece[0].transform.parent.transform.localPosition = greenPlayerPiece[0].transform.parent.transform.localPosition;
+            ExchangeProperties(redPlayerPiece[0].transform.parent, greenPlayerPiece[0].transform.parent);
+            greenPlayerPiece[0].transform.parent.transform.localPosition = yelloPlayerPiece[0].transform.parent.transform.localPosition;
+            ExchangeProperties(greenPlayerPiece[0].transform.parent, yelloPlayerPiece[0].transform.parent);
+            yelloPlayerPiece[0].transform.parent.transform.localPosition = bluePlayerPiece[0].transform.parent.transform.localPosition;
+            ExchangeProperties(yelloPlayerPiece[0].transform.parent, bluePlayerPiece[0].transform.parent);
+            bluePlayerPiece[0].transform.parent.transform.localPosition = temp;
+            ExchangeProperties(bluePlayerPiece[0].transform.parent, lp.transform);
+            Destroy(lp);
+            temp = RedRollDiceHome.transform.localPosition;
+            var rot=RedRollDiceHome.transform.localEulerAngles;
+
+            GameObject klp = new GameObject();
+            GameObject klp1 = new GameObject();
+            GameObject klp2 = new GameObject();
+            klp1.transform.parent = klp.transform;
+            klp2.transform.parent = klp.transform;
+            ExchangeProperties(klp.transform, RedRollDiceHome.transform);
+            RedRollDiceHome.transform.localPosition = GreenRollDiceHome.transform.localPosition;
+            RedRollDiceHome.transform.localEulerAngles = GreenRollDiceHome.transform.localEulerAngles;
+            ExchangeProperties(RedRollDiceHome.transform, GreenRollDiceHome.transform);
+            GreenRollDiceHome.transform.localPosition = YellowRollDiceHome.transform.localPosition;
+            GreenRollDiceHome.transform.localEulerAngles = YellowRollDiceHome.transform.localEulerAngles;
+            ExchangeProperties(GreenRollDiceHome.transform, YellowRollDiceHome.transform);
+            YellowRollDiceHome.transform.localPosition = BlueRollDiceHome.transform.localPosition;
+            YellowRollDiceHome.transform.localEulerAngles = BlueRollDiceHome.transform.localEulerAngles;
+            ExchangeProperties(YellowRollDiceHome.transform, BlueRollDiceHome.transform);
+            BlueRollDiceHome.transform.localPosition = temp;
+            BlueRollDiceHome.transform.localEulerAngles = rot;
+            ExchangeProperties(BlueRollDiceHome.transform, klp.transform);
+            Destroy(klp);
+        }
+    }
+
+    public void ExchangeProperties(Transform parent1, Transform parent2)
+    {
+
+
+        for (int i = 0; i < parent1.childCount && i< parent2.childCount; i++)
+        {
+            Debug.Log(parent1.GetChild(i).name);
+            parent1.GetChild(i).localPosition = parent2.GetChild(i).localPosition;
+            parent1.GetChild(i).localEulerAngles = parent2.GetChild(i).localEulerAngles;
+
+        }
+    }
+
+
+    public void ReturnHomeScreen()
+    {
+        Destroy(GameObject.FindGameObjectWithTag("UIManager"));
+        SceneManager.LoadScene("HomeScreen");
+
+    }
+
+}
