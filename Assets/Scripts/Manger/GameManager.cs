@@ -257,6 +257,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameManager.gm.ManageRollingDice[0].gameObject.SetActive(false);
         GameManager.gm.ManageRollingDice[2].gameObject.SetActive(true);
         GameManager.gm.dice = GameManager.gm.ManageRollingDice[2];
+        diceTimerCoroutine = StartCoroutine(DiceTimer());
     }
 
     [PunRPC]
@@ -266,6 +267,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameManager.gm.ManageRollingDice[0].gameObject.SetActive(true);
         GameManager.gm.ManageRollingDice[2].gameObject.SetActive(false);
         GameManager.gm.dice = GameManager.gm.ManageRollingDice[0];
+        diceTimerCoroutine = StartCoroutine(DiceTimer());
     }
 
     void ShiftDice()
@@ -345,7 +347,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 }
             }
         }
-        diceTimerCoroutine=StartCoroutine(DiceTimer());
+   
     }
 
     [PunRPC]
@@ -474,6 +476,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         Image timerImage = timerTransform.GetComponent<Image>();
+
+       
         if (timerImage == null)
         {
             Debug.LogError("Image component not found on Timer!");
@@ -481,7 +485,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
 
         // Start the timer
-        float duration = 10f;
+        timerImage.fillAmount = 0f;
+        float duration = 20f;
         float elapsedTime = 0f;
         timerImage.fillAmount = 0f;
 
@@ -494,16 +499,27 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         timerImage.fillAmount = 1f;
         Debug.LogWarning(GameManager.gm.dice);
-        timerImage.fillAmount = 0;
+        photonView.RPC("RestartDiceTimer", RpcTarget.All);
+
         ShiftDice();
    
     }
 
-    private void RestartDiceTimer()
+    [PunRPC]
+    public void PlayTimer()
+    {
+        diceTimerCoroutine = StartCoroutine(DiceTimer());
+    }
+
+    [PunRPC]
+    public void RestartDiceTimer()
     {
         if (diceTimerCoroutine != null)
         {
             StopCoroutine(diceTimerCoroutine);
+            Transform timerTransform = GameManager.gm.dice.transform.parent.GetChild(0).GetChild(0).Find("Timer");
+            Image timerImage = timerTransform.GetComponent<Image>();
+            timerImage.fillAmount = 0;
         }
        /* diceTimerCoroutine = StartCoroutine(DiceTimer());*/
     }
