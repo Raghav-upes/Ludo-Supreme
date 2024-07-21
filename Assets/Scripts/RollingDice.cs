@@ -40,9 +40,12 @@ public class RollingDice : MonoBehaviourPunCallbacks, IPunObservable
         /*  if (photonView.Controller.UserId == PhotonNetwork.LocalPlayer.UserId)*/
         if (photonView.IsMine)
         {
-
+          
             generateRandomNumber = StartCoroutine(RollDice());
+            GameManager.gm.photonView.RPC("RestartDiceTimer", RpcTarget.All);
         }
+
+
 
     }
 
@@ -160,7 +163,7 @@ public class RollingDice : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 else
                 {
-
+                 /*   GameManager.gm.photonView.RPC("PlayTimer",RpcTarget.All);*/
                     if (numberGot == 6)
                     {
                         photonView.RPC("showSpinners", RpcTarget.All);
