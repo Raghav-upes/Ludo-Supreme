@@ -25,6 +25,7 @@ TagManager:
   - Green4
   - Launcher
   - Timer
+  - Mic
   layers:
   - Default
   - TransparentFX

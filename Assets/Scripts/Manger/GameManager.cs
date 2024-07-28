@@ -142,6 +142,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         /*  GameManager.gm.dice = GameManager.gm.ManageRollingDice[0];*/
         diceTimerCoroutine=StartCoroutine(DiceTimer());
+
+
+
+        
     }
     void HidePlayers(PlayerPiece[] playerPieces)
     {
