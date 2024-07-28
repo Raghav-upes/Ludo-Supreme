@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BlueHome : LudoHome
 {
+ 
 
     [PunRPC]
     void PlayerSound(string str)
