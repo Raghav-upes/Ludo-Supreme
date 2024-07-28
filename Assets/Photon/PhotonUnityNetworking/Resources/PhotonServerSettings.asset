@@ -87,6 +87,10 @@ MonoBehaviour:
   - CantHearYou
   - ChangeColour
   - HeresWhy
+  - <toggleMic2>g__makeITFalse|2_1
+  - <toggleMic2>g__makeITTrue|2_0
+  - ToggleRed
+  - ToggleYellow
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

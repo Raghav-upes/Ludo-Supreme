@@ -6,24 +6,26 @@ using Photon.Voice.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MicController : MonoBehaviour
+public class MicController : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
+
+    public GameObject RedMicNot;
+    public GameObject YellowMicNot;
     void Start()
     {
 
 
-        Debug.Log(GameManager.gm.ManageRollingDice[2].GetComponent<PhotonView>().IsMine + "momo");
-        Debug.Log(GameManager.gm.ManageRollingDice[0].GetComponent<PhotonView>().IsMine + "momo99");
-        if (GameManager.gm.ManageRollingDice[2].GetComponent<PhotonView>().IsMine)
+       
+        if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[1].UserId)
         {
             Debug.LogWarning("momom0");
-            GameManager.gm.ManageRollingDice[2].transform.parent.GetComponentInParent<Toggle>().interactable = true;
+            GameManager.gm.ManageRollingDice[2].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
         }
-        if (GameManager.gm.ManageRollingDice[0].GetComponent<PhotonView>().IsMine)
+        if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[0].UserId)
         {
             Debug.LogWarning("momom1");
-            GameManager.gm.ManageRollingDice[0].transform.parent.GetComponentInParent<Toggle>().interactable = true;
+            GameManager.gm.ManageRollingDice[0].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
         }
         // Add similar conditions for other pieces if necessary
 
@@ -36,12 +38,55 @@ public class MicController : MonoBehaviour
         
     }
 
+    public void toggleMicRed()
+    {
+
+        photonView.RPC("ToggleRed", RpcTarget.All);
+    }
+
+
+    public void toggleMicYellow()
+    {
+        photonView.RPC("ToggleYellow", RpcTarget.All);
+
+    }
+
+    [PunRPC]
+    void ToggleRed()
+    {
+        if (RedMicNot.activeSelf)
+        {
+            RedMicNot.SetActive(false);
+
+        }
+        else
+        {
+            RedMicNot.SetActive(true);
+        }
+
+    }
+
+    [PunRPC]
+    void ToggleYellow()
+    {
+        if (YellowMicNot.activeSelf)
+        {
+            YellowMicNot.SetActive(false);
+
+        }
+        else
+        {
+            YellowMicNot.SetActive(true);
+        }
+
+    }
 
     public void toggleMic(Recorder rc)
     {
         if (rc.RecordingEnabled)
         {
             rc.RecordingEnabled = false;
+
         }
         else
         {
