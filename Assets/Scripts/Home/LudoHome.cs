@@ -9,6 +9,13 @@ public class LudoHome : MonoBehaviour
     public RollingDice rollingDice;
 
 
+    public GameObject speaker;
+
+    private void Start()
+    {
+            Instantiate(speaker, this.transform);
+    }
+
     [PunRPC]
     public void hideSpinners()
     {
