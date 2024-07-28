@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using ExitGames.Client.Photon;
 using Photon.Pun;
-using Newtonsoft.Json;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Photon.Pun.Demo.Shared.DocLinks;
@@ -394,11 +393,6 @@ public class PathPoint : MonoBehaviourPunCallbacks,IPunObservable
             spriteLayer++;
         }
     }
-
-    private JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-    {
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-    };
 
 /*    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
