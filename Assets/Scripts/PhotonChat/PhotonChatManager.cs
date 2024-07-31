@@ -5,11 +5,12 @@ using Photon.Pun;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 
 public class PhotonChatManager : MonoBehaviour, IChatClientListener
 {
     #region Setup
-    [SerializeField] GameObject joinChat;
     bool isConnected;
     ChatClient chatClient;
     [SerializeField] string userID;
@@ -18,6 +19,12 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     {
         userID = valueIn;
     }
+
+  private void Start()
+    {
+        ChatConnectOnClick();
+    }
+
 
     public void ChatConnectOnClick()
     {
@@ -31,8 +38,9 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
 
     [SerializeField] GameObject chatPanel;
-    [SerializeField] InputField chatField;
-    [SerializeField] Text chatDisplay;
+    [SerializeField] TMP_InputField chatField;
+    [SerializeField] TMP_Text chatDisplay;
+    [SerializeField] GameObject contentArea;
     string privatereceiver = "";
     string currentChat;
 
@@ -52,18 +60,18 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
     }
     public void DebugReturn(DebugLevel level, string message)
     {
-        throw new System.NotImplementedException();
+        Debug.LogWarning("Pata Nahi kya hoga");
     }
 
     public void OnChatStateChange(ChatState state)
     {
-        throw new System.NotImplementedException();
+        Debug.LogWarning("About to connect");
     }
 
     public void OnConnected()
     {
         Debug.Log("CONNECTED");
-        joinChat.SetActive(false);
+
         chatClient.Subscribe(new string[] { "RegionalChannel" });
     }
     public void OnDisconnected()
@@ -73,11 +81,14 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
 
     public void OnGetMessages(string channelName, string[] senders, object[] messages)
     {
-        string msgs = "";
+
+     
         for (int i = 0; i < senders.Length; i++)
         {
-            msgs = string.Format("{0} : {1}", senders[i], messages[i]);
-            chatDisplay.text += "\n" + msgs;
+            Debug.Log(messages[i]);
+           string msgs = string.Format("{0} : {1}", senders[i], messages[i]);
+            TMP_Text op=Instantiate(chatDisplay, contentArea.transform);
+            op.text += "\n" + msgs;
             Debug.Log(msgs);
         }
     }
@@ -112,13 +123,7 @@ public class PhotonChatManager : MonoBehaviour, IChatClientListener
         throw new System.NotImplementedException();
     }
 
-    // Start is called before the first frame update
-    
-    void Start()
-    {
-        
-        
-    }
+
 
     // Update is called once per frame
     void Update()
