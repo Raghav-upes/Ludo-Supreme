@@ -91,6 +91,7 @@ MonoBehaviour:
   - <toggleMic2>g__makeITTrue|2_0
   - ToggleRed
   - ToggleYellow
+  - sendMessage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
