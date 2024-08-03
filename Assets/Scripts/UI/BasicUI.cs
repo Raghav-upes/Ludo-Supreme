@@ -7,6 +7,7 @@ using UnityEngine;
 public class BasicUI : MonoBehaviour
 {
     public GameObject menuOption;
+    public GameObject inputfield;
     bool toggle = false;
 
 
@@ -35,9 +36,12 @@ public class BasicUI : MonoBehaviour
         if (toggle)
         {
             menuOption.SetActive(true);
+            inputfield.SetActive(false);
+
         }
         else
         {
+            inputfield.SetActive(true);
             menuOption.SetActive(false);
         }
     }

@@ -7,59 +7,71 @@ using Photon.Pun;
 
 public class ShowChatInGame : MonoBehaviourPunCallbacks
 {
-    // Reference to the TMP_InputField
     public TMP_InputField inputField;
-
-    // Reference to the TMP_Text that will display the input text
-    public TMP_Text displayText;
-
-    public Image img;
-
-    // Reference to the Send Button
+    public TMP_Text player0Text;
+    public TMP_Text player1Text;
+    public TMP_Text player2Text;
+    public TMP_Text player3Text;
+    public Image img0;
+    public Image img1;
+    public Image img2;
+    public Image img3;
     public Button sendButton;
 
     void Start()
     {
-        // Ensure the inputField, displayText, and sendButton are assigned
-        if (inputField == null || displayText == null || sendButton == null)
+        if (inputField == null || sendButton == null || player0Text == null || player1Text == null || player2Text == null || player3Text == null)
         {
-            Debug.LogError("Please assign the inputField, displayText, and sendButton in the inspector.");
+            Debug.LogError("Please assign the inputField, sendButton, and player TMP_Texts in the inspector.");
             return;
         }
-
-        // Add a listener to the Send Button to call the OnSendButtonPressed method when clicked
         sendButton.onClick.AddListener(OnSendButtonPressed);
     }
 
-    // Method to handle the Send Button press
     void OnSendButtonPressed()
     {
-        photonView.RPC("sendMessage", RpcTarget.All);
-    }
+        string message = inputField.text;
+        photonView.RPC("SendMessageToAll", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId, message);
 
+        // Clear the input field
+        inputField.text = string.Empty;
+    }
 
     [PunRPC]
-    void sendMessage()
+    void SendMessageToAll(string userId, string message)
     {
-        img.gameObject.SetActive(true);
-        // Update the displayText with the inputField text
-        displayText.text = inputField.text;
-
-        // Start the coroutine to hide the text after 2 seconds
-        StartCoroutine(HideTextAfterDelay());
+        if (userId == PhotonNetwork.PlayerList[0].UserId)
+        {
+            UpdatePlayerText(player0Text, img0, message);
+            StartCoroutine(HideTextAfterDelay(player0Text, img0));
+        }
+        else if (userId == PhotonNetwork.PlayerList[1].UserId)
+        {
+            UpdatePlayerText(player1Text, img1, message);
+            StartCoroutine(HideTextAfterDelay(player1Text, img1));
+        }
+        else if (userId == PhotonNetwork.PlayerList[2].UserId)
+        {
+            UpdatePlayerText(player2Text, img2, message);
+            StartCoroutine(HideTextAfterDelay(player2Text, img2));
+        }
+        else if (userId == PhotonNetwork.PlayerList[3].UserId)
+        {
+            UpdatePlayerText(player3Text, img3, message);
+            StartCoroutine(HideTextAfterDelay(player3Text, img3));
+        }
     }
 
-    // Coroutine to hide the text after a delay
-    IEnumerator HideTextAfterDelay()
+    void UpdatePlayerText(TMP_Text playerText, Image playerImage, string message)
     {
-        // Wait for 2 seconds
+        playerImage.gameObject.SetActive(true);
+        playerText.text = message;
+    }
+
+    IEnumerator HideTextAfterDelay(TMP_Text playerText, Image playerImage)
+    {
         yield return new WaitForSeconds(2f);
-
-        // Clear the displayText and inputField
-        displayText.text = string.Empty;
-        inputField.text = string.Empty;
-
-        // Hide the displayText object
-        img.gameObject.SetActive(false);
+        playerText.text = string.Empty;
+        playerImage.gameObject.SetActive(false);
     }
 }
