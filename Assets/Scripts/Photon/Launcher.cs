@@ -4,6 +4,8 @@ using Photon.Realtime;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using ExitGames.Client.Photon.StructWrapping;
 
 namespace Com.MyCompany.MyGame
 {
@@ -39,6 +41,7 @@ namespace Com.MyCompany.MyGame
         {
             Debug.Log("Launcher: Start called.");
             StartCoroutine(AnimateRectTransformPosY());
+            SetPlayerNicknameAndProperties();
             Connect();
         }
 
@@ -77,10 +80,8 @@ namespace Com.MyCompany.MyGame
             Debug.Log("Launcher: OnJoinedRoom called. Now this client is in a room.");
             if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
             {
-               
-                  
-                
-               
+                photonView.RPC("SetImage", RpcTarget.All);
+
                 photonView.RPC("coinMove", RpcTarget.All);
              
                 photonView.RPC("startDelayAnim", RpcTarget.All);
@@ -88,6 +89,32 @@ namespace Com.MyCompany.MyGame
 
             }
 
+
+        }
+
+        [PunRPC]
+        void SetImage()
+        {
+
+            if (rectTransform.transform.childCount > 1)
+            {
+                // Start from index 1 to keep the first child
+                for (int i = 1; i < rectTransform.transform.childCount; i++)
+                {
+                    Destroy(rectTransform.transform.GetChild(i).gameObject);
+                }
+            }
+
+            Player[] players = PhotonNetwork.PlayerList;
+            for (int i = 0; i < players.Length; i++)
+            {
+
+                if (!players[i].IsLocal)
+                {
+                    if (players[i].CustomProperties.TryGetValue<int>("Image", out int Image))
+                        rectTransform.gameObject.GetComponentInChildren<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[Image]; ;
+                }
+            }
 
         }
 
@@ -102,7 +129,9 @@ namespace Com.MyCompany.MyGame
 
                 // Reset position to 0
                 rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, 0);
-            }
+                
+               
+           }
         }
 
         IEnumerator MoveRectTransformPosY(float startY, float endY, float duration)
@@ -293,9 +322,31 @@ namespace Com.MyCompany.MyGame
         }
 
         #endregion
+
+
+
+        private void SetPlayerNicknameAndProperties()
+        {
+            // Set a unique player nickname
+            PhotonNetwork.NickName = DBManager.username;
+
+            // Define custom properties
+            ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable
+            {
+                { "Image", (int)DBManager.myImage },  
+            };
+
+            // Set custom properties for the local player
+            PhotonNetwork.LocalPlayer.SetCustomProperties(customProperties);
+
+            Debug.Log("Launcher: Player nickname and custom properties set.");
+        }
     }
 
 
 
-  
+
+
+
+
 }

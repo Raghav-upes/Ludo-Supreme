@@ -7,7 +7,8 @@ public class DBManager : MonoBehaviour
     public static string username = "Guest";
     public static int TotalBalance = 100;
     public static string MobileNumber = "9090";
-
+    public static bool isSignedIN = false;
+    public static PlayerImage myImage=PlayerImage.Default;
     public static bool LoggedIn
     {
         get { return username != "Guest"; }
@@ -19,6 +20,8 @@ public class DBManager : MonoBehaviour
         username = "Guest";
         TotalBalance = 100;
         MobileNumber = "9090";
+        isSignedIN = false;
+        myImage = PlayerImage.Default;
     }
 
 }

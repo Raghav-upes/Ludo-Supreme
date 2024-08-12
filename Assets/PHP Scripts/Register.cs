@@ -17,7 +17,7 @@ public class Register : MonoBehaviour
     public TMP_Text msg;
     public Button submitBtn;
 
-
+   PlayerImage playerImage;
 
 
 
@@ -36,6 +36,7 @@ public class Register : MonoBehaviour
         form.AddField("name", username.text);
         form.AddField("password", password.text);
         form.AddField("number", PhoneNumber.text);
+        form.AddField("image", (int)playerImage);
         UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1/sqlconnect/register.php", form);
         BasicUI.instance.showLoader();
         yield return www.SendWebRequest();
@@ -46,6 +47,15 @@ public class Register : MonoBehaviour
             DBManager.username = username.text;
             DBManager.MobileNumber = PhoneNumber.text;
             BasicUI.instance.setUsername();
+            DBManager.isSignedIN = true;
+            DBManager.myImage = playerImage;
+            
+
+            GameObject.FindGameObjectWithTag("UIManager").GetComponent<GameStartManager>().InsertImages();
+            // Save username and password (consider encrypting the password)
+            PlayerPrefs.SetString("username", username.text);
+            PlayerPrefs.SetString("password", password.text); // Encrypt this in a real application
+            PlayerPrefs.Save();
             this.transform.parent.gameObject.SetActive(false);
             username.text = "";
             password.text = "";
@@ -63,6 +73,10 @@ public class Register : MonoBehaviour
     }
 
 
+    public void selectImage(int num)
+    {
+        playerImage = (PlayerImage)num;
+    }
 
 
     public void verify()

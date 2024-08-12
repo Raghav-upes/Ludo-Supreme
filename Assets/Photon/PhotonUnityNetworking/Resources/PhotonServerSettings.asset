@@ -93,6 +93,9 @@ MonoBehaviour:
   - ToggleYellow
   - sendMessage
   - SendMessageToAll
+  - ToggleBlue
+  - ToggleGreen
+  - SetImage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

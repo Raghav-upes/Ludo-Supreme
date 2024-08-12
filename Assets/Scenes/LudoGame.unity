@@ -233,11 +233,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuOption: {fileID: 1563811908}
+  inputfield: {fileID: 0}
   launcher2POnline: {fileID: 0}
   launcher4Online: {fileID: 0}
   P2Screen: {fileID: 0}
   P4Screen: {fileID: 0}
   i: 0
+  username: {fileID: 0}
+  money: {fileID: 0}
+  loader: {fileID: 0}
 --- !u!212 &139915010 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 2637832663388310200, guid: 4628c09907616fd4a89727480dda525b, type: 3}
@@ -5510,6 +5514,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48.00003
       objectReference: {fileID: 0}
+    - target: {fileID: 4349039432638294578, guid: 3538a7361054b00478108df52ad8a055, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5480129334942787819, guid: 3538a7361054b00478108df52ad8a055, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -5594,6 +5602,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1595223}
+    - target: {fileID: 7162118173121950253, guid: 3538a7361054b00478108df52ad8a055, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9127753209414034692, guid: 3538a7361054b00478108df52ad8a055, type: 3}
       propertyPath: m_Name
       value: Canvas

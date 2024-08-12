@@ -12,6 +12,8 @@ public class MicController : MonoBehaviourPunCallbacks
 
     public GameObject RedMicNot;
     public GameObject YellowMicNot;
+    public GameObject BlueMicNot;
+    public GameObject GreenMicNot;
     void Start()
     {
 
@@ -19,24 +21,43 @@ public class MicController : MonoBehaviourPunCallbacks
        
         if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[1].UserId)
         {
-            Debug.LogWarning("momom0");
+          
             GameManager.gm.ManageRollingDice[2].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
         }
         if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[0].UserId)
         {
-            Debug.LogWarning("momom1");
+        
             GameManager.gm.ManageRollingDice[0].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
+        }
+        if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[2].UserId)
+        {
+        
+            GameManager.gm.ManageRollingDice[1].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
+        }
+        if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[3].UserId)
+        {
+          
+            GameManager.gm.ManageRollingDice[3].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
         }
         // Add similar conditions for other pieces if necessary
 
 
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public void toggleMicBlue()
     {
-        
+
+        photonView.RPC("ToggleBlue", RpcTarget.All);
     }
+
+
+    public void toggleMicGreen()
+    {
+        photonView.RPC("ToggleGreen", RpcTarget.All);
+
+    }
+
 
     public void toggleMicRed()
     {
@@ -50,6 +71,10 @@ public class MicController : MonoBehaviourPunCallbacks
         photonView.RPC("ToggleYellow", RpcTarget.All);
 
     }
+
+
+
+
 
     [PunRPC]
     void ToggleRed()
@@ -80,6 +105,38 @@ public class MicController : MonoBehaviourPunCallbacks
         }
 
     }
+
+
+    [PunRPC]
+    void ToggleGreen()
+    {
+        if (GreenMicNot.activeSelf)
+        {
+            GreenMicNot.SetActive(false);
+
+        }
+        else
+        {
+            GreenMicNot.SetActive(true);
+        }
+
+    }
+
+    [PunRPC]
+    void ToggleBlue()
+    {
+        if (BlueMicNot.activeSelf)
+        {
+            BlueMicNot.SetActive(false);
+
+        }
+        else
+        {
+            BlueMicNot.SetActive(true);
+        }
+
+    }
+
 
     public void toggleMic(Recorder rc)
     {

@@ -324,13 +324,6 @@ public class GameManagerOffline : MonoBehaviour
                     GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
                     return;
                 }
-              /* else if (i == 0 && offlineUIManagerThree.RedName == "PLON")
-                {
-                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
-                    GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(true);
-                }*/
-
-
                 i = passout(i);
                 if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i])
                 {
