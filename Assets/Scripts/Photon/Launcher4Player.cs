@@ -3,8 +3,9 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using System.Collections;
-using UnityEngine.SceneManagement;
-using System.Drawing;
+using ExitGames.Client.Photon.StructWrapping;
+using UnityEngine.UI;
+using Unity.VisualScripting;
 
 namespace Com.MyCompany.MyGame
 {
@@ -27,7 +28,8 @@ namespace Com.MyCompany.MyGame
         public RectTransform player4;
         private float duration = 1.0f; // Duration for one full move from 0 to 1245
 
-
+        public TMP_Text MyName;
+        public TMP_Text[] opponents;
 
         #region MonoBehaviour CallBacks
 
@@ -41,6 +43,8 @@ namespace Com.MyCompany.MyGame
         {
             Debug.Log("Launcher: Start called.");
             StartCoroutine(AnimateRectTransformPosY());
+            MyName.text = DBManager.username;
+            SetPlayerNicknameAndProperties();
             Connect();
         }
 
@@ -80,7 +84,7 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.CurrentRoom.PlayerCount == 4)
             {
 
-
+                photonView.RPC("SetImage", RpcTarget.All);
 
 
                 photonView.RPC("coinMove", RpcTarget.All);
@@ -90,6 +94,48 @@ namespace Com.MyCompany.MyGame
 
             }
 
+
+        }
+
+        [PunRPC]
+        void SetImage()
+        {
+            RectTransform[] playersp = { player2, player3, player4 };
+
+            foreach (var player in playersp)
+            {
+                if (player.transform.childCount > 1)
+                {
+                    // Start from index 1 to keep the first child
+                    for (int i = 1; i < player.transform.childCount; i++)
+                    {
+                        Destroy(player.transform.GetChild(i).gameObject);
+                    }
+                }
+            }
+            Player[] NonLocal=new Player[3];
+
+            Player[] players = PhotonNetwork.PlayerList;
+            for (int i = 0,j=0; i < players.Length; i++)
+            {
+               
+                if (!players[i].IsLocal)
+                {
+                    NonLocal[j] = players[i];
+                    j++;
+                }
+            }
+            for (int i=0;i<3;i++)
+            {
+                if (NonLocal[i].CustomProperties.TryGetValue<int>("Image", out int image))
+                {
+                    Debug.LogErrorFormat(image.ToString());
+                    playersp[i].gameObject.GetComponentInChildren<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+                }
+                opponents[i].text = NonLocal[i].NickName;
+
+
+            }
 
         }
 
@@ -318,6 +364,25 @@ namespace Com.MyCompany.MyGame
                 AssignOwnershipBasedOnPiece(player);
             }
         }
+
+        private void SetPlayerNicknameAndProperties()
+        {
+            // Set a unique player nickname
+            PhotonNetwork.NickName = DBManager.username;
+
+            // Define custom properties
+            ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable
+            {
+                { "Image", (int)DBManager.myImage },
+            };
+
+            // Set custom properties for the local player
+            PhotonNetwork.LocalPlayer.SetCustomProperties(customProperties);
+
+            Debug.Log("Launcher: Player nickname and custom properties set.");
+        }
+
+        
 
         #endregion
     }

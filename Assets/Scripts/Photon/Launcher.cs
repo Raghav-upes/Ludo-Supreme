@@ -27,6 +27,9 @@ namespace Com.MyCompany.MyGame
         private float duration = 1.0f; // Duration for one full move from 0 to 1245
 
 
+        public TMP_Text myName;
+        public TMP_Text opponent;
+
 
         #region MonoBehaviour CallBacks
 
@@ -42,6 +45,7 @@ namespace Com.MyCompany.MyGame
             Debug.Log("Launcher: Start called.");
             StartCoroutine(AnimateRectTransformPosY());
             SetPlayerNicknameAndProperties();
+            myName.text = DBManager.username;
             Connect();
         }
 
@@ -112,7 +116,8 @@ namespace Com.MyCompany.MyGame
                 if (!players[i].IsLocal)
                 {
                     if (players[i].CustomProperties.TryGetValue<int>("Image", out int Image))
-                        rectTransform.gameObject.GetComponentInChildren<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[Image]; ;
+                        rectTransform.gameObject.GetComponentInChildren<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[Image];
+                    opponent.text = players[i].NickName;
                 }
             }
 

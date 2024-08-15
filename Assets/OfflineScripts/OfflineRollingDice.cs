@@ -110,18 +110,11 @@ public class OfflineRollingDice : MonoBehaviour
                 {
                     if(numberGot==6)
                     {
-                        for (int i = 0; i < 4; i++)
-                        {
-                            transform.parent.GetChild(i).GetChild(1).gameObject.SetActive(true);
-                        }
+                        showSpinners();
                     }
                     else
                     {
-                        for (int i = 0; i < 4; i++)
-                        {
-                            if(transform.parent.GetChild(i).GetComponent<OfflinePlayerPiece>().isReady)
-                            transform.parent.GetChild(i).GetChild(1).gameObject.SetActive(true);
-                        }
+                        showOnlyReadySpinners();
                     }
                     if (outPieces == 0 && nummberGot==6)
                     {
@@ -135,11 +128,7 @@ public class OfflineRollingDice : MonoBehaviour
                         {
                             GameManagerOffline.gm.canPlayerMove = false;
 
-                            foreach (var op in this.GetComponentInParent<OfflineLudoHome>().playerPieces)
-                            {
-                                Debug.LogWarning(op.transform.GetChild(1).gameObject.name);
-                                op.transform.GetChild(1).gameObject.SetActive(false);
-                            }
+                            hideSpinners();
 
                             MovePlayerPiece = StartCoroutine(MovePlayer(playerPiecePosition));
                             
@@ -230,6 +219,81 @@ public class OfflineRollingDice : MonoBehaviour
         }
     }
 
+    void hideSpinners()
+    {
+        if (this.name.Contains("Yellow"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineYellowPlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(false);
+            }
+        }
+        if (this.name.Contains("Red"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineRedPlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(false);
+            }
+        }
+        if (this.name.Contains("Blue"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineBluePlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(false);
+            }
+        }
+        if (this.name.Contains("Green"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineGreenPlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(false);
+            }
+        }
+
+    }
+
+    void showOnlyReadySpinners()
+    {
+
+        if (this.name.Contains("Yellow"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineYellowPlayerPiece>())
+            {
+                if (op.isReady)
+                    op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+        if (this.name.Contains("Red"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineRedPlayerPiece>())
+            {
+                if (op.isReady)
+                    op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+        if (this.name.Contains("Blue"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineBluePlayerPiece>())
+            {
+                if (op.isReady)
+                    op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+        if (this.name.Contains("Green"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineGreenPlayerPiece>())
+            {
+                if (op.isReady)
+                    op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+
+    }
+
     int outPlayerToMove()
     {
         for(int i = 0; i < 4; i++)
@@ -242,6 +306,43 @@ public class OfflineRollingDice : MonoBehaviour
         return 0;
     }
 
+
+    void showSpinners()
+    {
+        if (this.name.Contains("Yellow"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineYellowPlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+        if (this.name.Contains("Red"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineRedPlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+        if (this.name.Contains("Blue"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineBluePlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+        if (this.name.Contains("Green"))
+        {
+            foreach (var op in GameObject.FindObjectsOfType<OfflineGreenPlayerPiece>())
+            {
+
+                op.transform.GetChild(1).gameObject.SetActive(true);
+            }
+        }
+
+    }
     int CheckoutPlayer()
     {
         if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[0])

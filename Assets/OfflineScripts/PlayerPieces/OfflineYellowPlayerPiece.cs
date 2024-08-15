@@ -41,7 +41,7 @@ public class OfflineYellowPlayerPiece : OfflinePlayerPiece
 
     void hideSpinners()
     {
-        foreach (var op in this.GetComponentInParent<OfflineBlueHome>().playerPieces)
+        foreach (var op in this.GetComponentInParent<OfflineYellowHome>().playerPieces)
         {
             Debug.LogWarning(op.transform.GetChild(1).gameObject.name);
             op.transform.GetChild(1).gameObject.SetActive(false);

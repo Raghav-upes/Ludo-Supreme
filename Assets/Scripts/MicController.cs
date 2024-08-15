@@ -29,12 +29,12 @@ public class MicController : MonoBehaviourPunCallbacks
         
             GameManager.gm.ManageRollingDice[0].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
         }
-        if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[2].UserId)
+        if (PhotonNetwork.PlayerList.Length>2 && PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[2].UserId)
         {
         
             GameManager.gm.ManageRollingDice[1].transform.parent.GetComponentInChildren<Toggle>().interactable = true;
         }
-        if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[3].UserId)
+        if (PhotonNetwork.PlayerList.Length > 2 &&  PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[3].UserId)
         {
           
             GameManager.gm.ManageRollingDice[3].transform.parent.GetComponentInChildren<Toggle>().interactable = true;

@@ -30,11 +30,12 @@ public class GameStartManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+        if (OnlineMultiplayer && VSFriends)
+        {
             OnlineMultiplayer.interactable = DBManager.isSignedIN;
             VSFriends.interactable = DBManager.isSignedIN;
 
-
+        }
 
 
         
