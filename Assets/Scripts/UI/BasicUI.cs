@@ -17,13 +17,17 @@ public class BasicUI : MonoBehaviour
     public GameObject P2Screen;
     public GameObject P4Screen;
 
-        public int i;
+    public int i;
 
     public static BasicUI instance;
 
     public TMP_Text username;
     public TMP_Text money;
     public GameObject loader;
+
+    public GameObject messageButton;
+    public GameObject sendButton;
+    public GameObject canvas;
 
     private void Awake()
     {
@@ -52,6 +56,19 @@ public class BasicUI : MonoBehaviour
         i = j;
     }
 
+    public void MessageToggle()
+    {
+        sendButton.gameObject.SetActive(true);
+        messageButton.gameObject.SetActive(false);
+        canvas.gameObject.SetActive(true);
+
+    }
+    public void SendToggle()
+    {
+        messageButton.gameObject.SetActive(true);
+        sendButton.gameObject.SetActive(false);
+        canvas.gameObject.SetActive(false);
+    }
 
 
     public void chooseNumberOfPlayer()
@@ -59,12 +76,12 @@ public class BasicUI : MonoBehaviour
         this.gameObject.SetActive(false);
         if (i == 2)
         {
-           
+
             launcher2POnline.SetActive(true);
             P2Screen.SetActive(true);
             P2Screen.transform.GetComponentInChildren<MagnifierAnimation>().StartMyAnim();
             launcher2POnline.GetComponent<Launcher>().StartMyGame();
-      
+
 
         }
         else if (i == 4)
