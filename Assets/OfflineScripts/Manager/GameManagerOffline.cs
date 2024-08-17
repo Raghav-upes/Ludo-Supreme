@@ -145,14 +145,6 @@ public class GameManagerOffline : MonoBehaviour
             GreenPlayerName.text = offlineUIManagerThree.GreenName;
             YellowPlayerName.text = offlineUIManagerThree.YellowName;
         }
-
-/*        for (int i = 0; i < 4; i++)
-        {
-            redPlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(redPlayerPiece[i].name)].transform.position;
-            bluePlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(bluePlayerPiece[i].name)].transform.position;
-            yelloPlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(yelloPlayerPiece[i].name)].transform.position;
-            greenPlayerPiece[i].transform.position = LudoPath.GetComponent<OfflinePathObjectParent>().BasePathPoint[BasePointPosition(greenPlayerPiece[i].name)].transform.position;
-        }*/
     }
 
 
@@ -205,22 +197,6 @@ public class GameManagerOffline : MonoBehaviour
                 ShiftDice();
             }
           
-           /* for(int i = 0; i < 4; i++)
-            {
-                if (i == 3)
-                {
-                    nextDice = 0;
-                }
-                else
-                {
-                    nextDice = i + 1;
-                }
-                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i]){
-
-                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
-                    GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
-                }
-            }*/
             GameManagerOffline.gm.canDiceRoll = true;
         }
         else
@@ -406,48 +382,14 @@ public class GameManagerOffline : MonoBehaviour
     {
         if(number==0)
         {
-            /* Board.transform.localEulerAngles = new Vector3(0, 0, -90f);
-             LudoPath.transform.localEulerAngles = new Vector3(0, 0, -90f);
-             OrangeCanvasTemp.transform.localEulerAngles = new Vector3(0, 0, 0);
-             var temp = redPlayerPiece[0].transform.parent.transform.localPosition;
-             GameObject lp = CloneTransformHierarchy(redPlayerPiece[0].transform.parent.gameObject);
-             ExchangeProperties(lp.transform, redPlayerPiece[0].transform.parent);
-             redPlayerPiece[0].transform.parent.transform.localPosition = greenPlayerPiece[0].transform.parent.transform.localPosition;
-             ExchangeProperties(redPlayerPiece[0].transform.parent, greenPlayerPiece[0].transform.parent);
-             greenPlayerPiece[0].transform.parent.transform.localPosition = yelloPlayerPiece[0].transform.parent.transform.localPosition;
-             ExchangeProperties(greenPlayerPiece[0].transform.parent, yelloPlayerPiece[0].transform.parent);
-             yelloPlayerPiece[0].transform.parent.transform.localPosition = bluePlayerPiece[0].transform.parent.transform.localPosition;
-             ExchangeProperties(yelloPlayerPiece[0].transform.parent, bluePlayerPiece[0].transform.parent);
-             bluePlayerPiece[0].transform.parent.transform.localPosition = temp;
-             ExchangeProperties(bluePlayerPiece[0].transform.parent, lp.transform);
-             Destroy(lp);
-             temp = RedRollDiceHome.transform.localPosition;
-             var rot=RedRollDiceHome.transform.localEulerAngles;
-
-             GameObject klp = CloneTransformHierarchy(RedRollDiceHome);
-             ExchangeProperties(klp.transform, RedRollDiceHome.transform);
-             RedRollDiceHome.transform.localPosition = GreenRollDiceHome.transform.localPosition;
-             RedRollDiceHome.transform.localEulerAngles = GreenRollDiceHome.transform.localEulerAngles;
-             ExchangeProperties(RedRollDiceHome.transform, GreenRollDiceHome.transform);
-             GreenRollDiceHome.transform.localPosition = YellowRollDiceHome.transform.localPosition;
-             GreenRollDiceHome.transform.localEulerAngles = YellowRollDiceHome.transform.localEulerAngles;
-             ExchangeProperties(GreenRollDiceHome.transform, YellowRollDiceHome.transform);
-             YellowRollDiceHome.transform.localPosition = BlueRollDiceHome.transform.localPosition;
-             YellowRollDiceHome.transform.localEulerAngles = BlueRollDiceHome.transform.localEulerAngles;
-             ExchangeProperties(YellowRollDiceHome.transform, BlueRollDiceHome.transform);
-             BlueRollDiceHome.transform.localPosition = temp;
-             BlueRollDiceHome.transform.localEulerAngles = rot;
-             ExchangeProperties(BlueRollDiceHome.transform, klp.transform);
-             Destroy(klp);*/
+           
 
 
 
             Board.transform.localEulerAngles = new Vector3(0, 0, -90f);
             LudoPath.transform.localEulerAngles = new Vector3(0, 0, -90f);
             LudoHome.transform.localEulerAngles = new Vector3(0, 0, -90f);
-            /*         OrangeCanvasTemp.transform.localEulerAngles = new Vector3(0, 180, 0);
-                     RedCanvasTemp.transform.localEulerAngles = new Vector3(0, 180, 0);*/
-
+            OrangeCanvasTemp.transform.localEulerAngles = new Vector3(0, 180, 0);
 
             for (int i = 0; i < 4; i++)
             {
@@ -509,7 +451,7 @@ public class GameManagerOffline : MonoBehaviour
             Debug.Log(parent1.GetChild(i).name);
             parent1.GetChild(i).position = parent2.GetChild(i).position;
             parent1.GetChild(i).localEulerAngles = parent2.GetChild(i).localEulerAngles;
-           /* ExchangeProperties(parent1.GetChild(i), parent2.GetChild(i));*/
+
         }
     }
 

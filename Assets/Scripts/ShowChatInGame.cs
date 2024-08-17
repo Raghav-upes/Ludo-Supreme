@@ -16,21 +16,22 @@ public class ShowChatInGame : MonoBehaviourPunCallbacks
     public Image img1;
     public Image img2;
     public Image img3;
-    public Button sendButton;
+
 
     void Start()
     {
-        if (inputField == null || sendButton == null || player0Text == null || player1Text == null || player2Text == null || player3Text == null)
+        if (inputField == null || player0Text == null || player1Text == null || player2Text == null || player3Text == null)
         {
             Debug.LogError("Please assign the inputField, sendButton, and player TMP_Texts in the inspector.");
             return;
         }
-        sendButton.onClick.AddListener(OnSendButtonPressed);
+
     }
 
-    void OnSendButtonPressed()
+    public void OnSendButtonPressed()
     {
         string message = inputField.text;
+        Debug.LogWarning(message); 
         photonView.RPC("SendMessageToAll", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId, message);
 
         // Clear the input field

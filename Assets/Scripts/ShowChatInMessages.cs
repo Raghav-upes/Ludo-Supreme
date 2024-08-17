@@ -4,43 +4,40 @@ using TMPro;
 using UnityEngine.UI;
 using Photon.Pun;
 using System.Collections.Generic;
+using Photon.Voice.Unity.Demos;
+using Photon.Realtime;
+using ExitGames.Client.Photon.StructWrapping;
+using System.Linq;
 
 public class ShowChatInMessages : MonoBehaviourPunCallbacks
 {
     public TMP_InputField messageInputField;
-    public TMP_Text playerOneText;
-    public TMP_Text playerTwoText;
-    public TMP_Text playerThreeText;
-    public TMP_Text playerFourText;
-    public Image playerOneImage;
-    public Image playerTwoImage;
-    public Image playerThreeImage;
-    public Image playerFourImage;
+
     public Button sendChatButton;
 
     private List<string> chatHistory = new List<string>();
-    public ScrollRect chatScrollView;
-    public GameObject chatContentContainer;
+    public GameObject chatScrollView;
     public GameObject chatMessageTemplate;
+
+    int i = 0;
 
     void Start()
     {
-        if (messageInputField == null || sendChatButton == null || playerOneText == null || playerTwoText == null || playerThreeText == null || playerFourText == null || chatScrollView == null || chatContentContainer == null || chatMessageTemplate == null)
+        if (messageInputField == null || sendChatButton == null || chatScrollView == null  || chatMessageTemplate == null)
         {
             Debug.LogError("Please assign all required references in the inspector.");
             return;
         }
-        sendChatButton.onClick.AddListener(OnSendChatButtonClicked);
+        chatScrollView.GetComponent<RectTransform>().SetHeight(chatScrollView.GetComponent<RectTransform>().anchoredPosition.y);
     }
 
-    void OnSendChatButtonClicked()
+   public void OnSendChatButtonClicked()
     {
         string chatMessage = messageInputField.text;
         if (!string.IsNullOrEmpty(chatMessage))
         {
             Debug.Log(chatMessage);
-            photonView.RPC("BroadcastChatMessage", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId, chatMessage);
-            messageInputField.text = string.Empty;
+            photonView.RPC("BroadcastChatMessage", RpcTarget.All, PhotonNetwork.NickName, chatMessage);
         }
     }
 
@@ -50,29 +47,17 @@ public class ShowChatInMessages : MonoBehaviourPunCallbacks
     {
         chatHistory.Add(chatMessage);
 
-        if (senderId == PhotonNetwork.PlayerList[0].UserId)
-        {
-            UpdatePlayerChatDisplay(playerOneText, playerOneImage, chatMessage);
-        }
-        else if (senderId == PhotonNetwork.PlayerList[1].UserId)
-        {
-            UpdatePlayerChatDisplay(playerTwoText, playerTwoImage, chatMessage);
-        }
-        else if (senderId == PhotonNetwork.PlayerList[2].UserId)
-        {
-            UpdatePlayerChatDisplay(playerThreeText, playerThreeImage, chatMessage);
-        }
-        else if (senderId == PhotonNetwork.PlayerList[3].UserId)
-        {
-            UpdatePlayerChatDisplay(playerFourText, playerFourImage, chatMessage);
-        }
+        GameObject newChatMessage = AddChatMessageToScrollView(senderId,chatMessage);
 
-        AddChatMessageToScrollView(chatMessage);
-
-        StartCoroutine(HidePlayerChatAfterDelay(playerOneText, playerOneImage));
-        StartCoroutine(HidePlayerChatAfterDelay(playerTwoText, playerTwoImage));
-        StartCoroutine(HidePlayerChatAfterDelay(playerThreeText, playerThreeImage));
-        StartCoroutine(HidePlayerChatAfterDelay(playerFourText, playerFourImage));
+        // Check if the message is from someone else (not the local player)
+        if (senderId != PhotonNetwork.NickName)
+        {
+            // Rotate the chat message by 180 degrees
+            RectTransform rectTransform = newChatMessage.GetComponent<RectTransform>();
+            rectTransform.localRotation = Quaternion.Euler(0, 0, 0);
+            Debug.LogWarning(newChatMessage.GetComponentInChildren<TMP_Text>().gameObject.name);
+            newChatMessage.GetComponentInChildren<TMP_Text>().gameObject.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0, 0, 0);
+        }
     }
 
     void UpdatePlayerChatDisplay(TMP_Text playerChatText, Image playerChatImage, string chatMessage)
@@ -88,13 +73,43 @@ public class ShowChatInMessages : MonoBehaviourPunCallbacks
         playerChatImage.gameObject.SetActive(false);
     }
 
-    void AddChatMessageToScrollView(string chatMessage)
+    GameObject AddChatMessageToScrollView(string senderId, string chatMessage)
     {
-        GameObject newChatMessage = Instantiate(chatMessageTemplate, chatContentContainer.transform);
-        TMP_Text chatMessageText = newChatMessage.GetComponent<TMP_Text>();
+        // Instantiate the chat message and set its parent to the ScrollView's content
+        GameObject newChatMessage = Instantiate(chatMessageTemplate, chatScrollView.transform);
+
+        // Set the text of the chat message
+        TMP_Text chatMessageText = newChatMessage.GetComponentInChildren<TMP_Text>();
         chatMessageText.text = chatMessage;
 
+        // Set the position of the new chat message
+        RectTransform rectTransform = newChatMessage.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = new Vector3(0, 110 + i * 150, 0);
+
+        // Access the Image component within the chatMessageTemplate
+        Image profileImage = rectTransform.gameObject.transform.GetChild(2).GetComponent<Image>();
+
+        // Get the player by senderId
+        Player senderPlayer = PhotonNetwork.PlayerList.FirstOrDefault(p => p.NickName == senderId);
+
+        if (senderPlayer != null && senderPlayer.CustomProperties.TryGetValue<int>("Image", out int imageIndex))
+        {
+            profileImage.sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[imageIndex];
+        }
+
+        // Update the layout manually
         Canvas.ForceUpdateCanvases();
-        chatScrollView.verticalNormalizedPosition = 0;
+
+        // Increment the index for the next message
+        i++;
+
+        if (i > 11)
+        {
+            chatScrollView.GetComponent<RectTransform>().SetHeight(chatScrollView.GetComponent<RectTransform>().anchoredPosition.y + 150 * i - 12 * 150);
+        }
+
+        // Return the instantiated chat message GameObject
+        return newChatMessage;
     }
+
 }
