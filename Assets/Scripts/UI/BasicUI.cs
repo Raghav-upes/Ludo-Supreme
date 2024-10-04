@@ -40,12 +40,12 @@ public class BasicUI : MonoBehaviour
         if (toggle)
         {
             menuOption.SetActive(true);
-            inputfield.SetActive(false);
+    /*        inputfield.SetActive(false);*/
 
         }
         else
         {
-            inputfield.SetActive(true);
+          /*  inputfield.SetActive(true);*/
             menuOption.SetActive(false);
         }
     }

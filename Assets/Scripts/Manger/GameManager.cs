@@ -48,6 +48,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     List<PathPoint> playerOnPathPointList = new List<PathPoint>();
 
 
+    public bool isRedPlayerPlaying = false;
+    public bool isGreenPlayerPlaying = false;
+    public bool isBluePlayerPlaying = false;
+    public bool isYellowPlayerPlaying = false;
+
+    public byte PlayerRemainingToPlay = 4;
+
 
     public GameObject Board;
 
@@ -57,9 +64,20 @@ public class GameManager : MonoBehaviourPunCallbacks
     public GameObject LudoHome;
 
     private Coroutine diceTimerCoroutine;
+
+    public GameObject RedImage;
+    public GameObject BlueImage;
+    public GameObject YellowImage;
+    public GameObject GreenImage;
+
+    public TMP_Text RedPlayerName;
+    public TMP_Text BluePlayerName;
+    public TMP_Text YellowPlayerName;
+    public TMP_Text GreenPlayerName;
     private void Awake()
     {
         gm = this;
+
 
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
@@ -82,6 +100,27 @@ public class GameManager : MonoBehaviourPunCallbacks
 
                 }
             }
+
+            GameManager.gm.ManageRollingDice[1].isAllowed = false;
+            GameManager.gm.ManageRollingDice[3].isAllowed = false;
+            RedPlayerName.text = PhotonNetwork.PlayerList[0].NickName;
+            YellowPlayerName.text = PhotonNetwork.PlayerList[1].NickName;
+
+
+
+            if (PhotonNetwork.PlayerList[0].CustomProperties.TryGetValue("Image", out object imageObj))
+            {
+                int image = (int)imageObj;
+                RedImage.GetComponent<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+            }
+            if (PhotonNetwork.PlayerList[1].CustomProperties.TryGetValue("Image", out object imageObjp))
+            {
+                int image = (int)imageObjp;
+                YellowImage.GetComponent<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+            }
+
+
+            PlayerRemainingToPlay = 2;
             /* if (pieceTypeName == "RedPiece")
              {
                  TransferOwnership(player, 1);
@@ -93,6 +132,34 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
 
             GameManager.gm.totalPlayerCanPlay = 4;
+            PlayerRemainingToPlay = 4;
+            RedPlayerName.text = PhotonNetwork.PlayerList[0].NickName;
+            YellowPlayerName.text = PhotonNetwork.PlayerList[1].NickName;
+            BluePlayerName.text = PhotonNetwork.PlayerList[2].NickName;
+            GreenPlayerName.text = PhotonNetwork.PlayerList[3].NickName;
+
+
+
+            if (PhotonNetwork.PlayerList[0].CustomProperties.TryGetValue("Image", out object imageObj))
+            {
+                int image = (int)imageObj;
+                RedImage.GetComponent<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+            }
+            if (PhotonNetwork.PlayerList[1].CustomProperties.TryGetValue("Image", out object imageObjp))
+            {
+                int image = (int)imageObjp;
+                YellowImage.GetComponent<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+            }
+            if (PhotonNetwork.PlayerList[2].CustomProperties.TryGetValue("Image", out object imageObjl))
+            {
+                int image = (int)imageObjl;
+                BlueImage.GetComponent<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+            }
+            if (PhotonNetwork.PlayerList[1].CustomProperties.TryGetValue("Image", out object imageObjpn))
+            {
+                int image = (int)imageObjpn;
+                GreenImage.GetComponent<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+            }
 
 
             if (PhotonNetwork.LocalPlayer.UserId == PhotonNetwork.PlayerList[1].UserId)
@@ -135,19 +202,73 @@ public class GameManager : MonoBehaviourPunCallbacks
              }*/
 
         }
-     
-        
+
+
+      
+
+
+        // Add similar conditions for other pieces if necessary
     }
+        
+
+    
 
     private void Start()
     {
         /*  GameManager.gm.dice = GameManager.gm.ManageRollingDice[0];*/
-        diceTimerCoroutine=StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[0]));
+      /*  diceTimerCoroutine=StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[0]));*/
 
 
 
         
     }
+
+
+/*    [PunRPC]
+    void reduceOnePlayer(string str)
+    {
+
+        if (str.Contains("Blue"))
+        {
+            GameManager.gm.blueOutPlayers -= 1;
+            GameManager.gm.blueCompletePlayers++;
+        }
+        else if (str.Contains("Red"))
+        {
+            GameManager.gm.redOutPlayers -= 1;
+            GameManager.gm.redCompletePlayers++;
+
+        }
+        else if (str.Contains("Yellow"))
+        {
+            GameManager.gm.yellowOutPlayers -= 1;
+            GameManager.gm.yellowCompletePlayers++;
+
+        }
+        else if (str.Contains("Green"))
+        {
+            GameManager.gm.greenOutPlayers -= 1;
+            GameManager.gm.greenCompletePlayers++;
+
+        }
+    }
+
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            photonView.RPC("reduceOnePlayer", RpcTarget.All, "Red");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            photonView.RPC("reduceOnePlayer", RpcTarget.All, "Yellow");
+        }
+    }*/
+
+
     void HidePlayers(PlayerPiece[] playerPieces)
     {
         for (int i = 0; i < playerPieces.Length; i++)
@@ -262,7 +383,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameManager.gm.ManageRollingDice[0].gameObject.SetActive(false);
         GameManager.gm.ManageRollingDice[2].gameObject.SetActive(true);
    /*     GameManager.gm.dice = GameManager.gm.ManageRollingDice[2];*/
-        diceTimerCoroutine = StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[2]));
+  /*      diceTimerCoroutine = StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[2]));*/
     }
 
     [PunRPC]
@@ -272,7 +393,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameManager.gm.ManageRollingDice[0].gameObject.SetActive(true);
         GameManager.gm.ManageRollingDice[2].gameObject.SetActive(false);
     /*    GameManager.gm.dice = GameManager.gm.ManageRollingDice[0];*/
-        diceTimerCoroutine = StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[0]));
+       /* diceTimerCoroutine = StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[0]));*/
     }
 
     void ShiftDice()
@@ -312,45 +433,45 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             }
         }
-        else if (GameManager.gm.totalPlayerCanPlay == 3)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (i == 2)
-                {
-                    nextDice = 0;
-                }
-                else
-                {
-                    nextDice = i + 1;
-                }
-                i = passout(i);
-                if (GameManager.gm.dice == GameManager.gm.ManageRollingDice[i])
-                {
 
-                    GameManager.gm.ManageRollingDice[i].gameObject.SetActive(false);
-                    GameManager.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
-                }
-            }
-        }
-        else if (GameManager.gm.totalPlayerCanPlay == 4)
+        else if (GameManager.gm.totalPlayerCanPlay >2)
         {
+            int currentDiceIndex = 0;
+            int nextDiceIndex = 0;
             for (int i = 0; i < 4; i++)
             {
-                if (i == 3)
-                {
-                    nextDice = 0;
-                }
-                else
-                {
-                    nextDice = i + 1;
-                }
-                i = passout(i);
                 if (GameManager.gm.dice == GameManager.gm.ManageRollingDice[i])
                 {
-                    photonView.RPC("changeoDice", RpcTarget.All, i, nextDice);
+                    currentDiceIndex = i;
+                    break;
+                }
+
+            }
+
+
+
+            if (currentDiceIndex == 3)
+            {
+                nextDiceIndex = 0;
+            }
+            else
+            {
+                nextDiceIndex = currentDiceIndex + 1;
+            }
+
+
+            while (!GameManager.gm.ManageRollingDice[nextDiceIndex].isAllowed)
+            {
+
+                nextDiceIndex++;
+                if (nextDiceIndex > 3)
+                {
+                    nextDiceIndex = 0;
                 }
             }
+
+
+            photonView.RPC("changeoDice", RpcTarget.All, currentDiceIndex, nextDiceIndex);
         }
    
     }
@@ -362,7 +483,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         GameManager.gm.ManageRollingDice[i].gameObject.SetActive(false);
         GameManager.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
        /* GameManager.gm.dice = GameManager.gm.ManageRollingDice[nextDice];*/
-        diceTimerCoroutine = StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[nextDice]));
+ /*       diceTimerCoroutine = StartCoroutine(DiceTimer(GameManager.gm.ManageRollingDice[nextDice]));*/
     }
 
     int passout(int index)

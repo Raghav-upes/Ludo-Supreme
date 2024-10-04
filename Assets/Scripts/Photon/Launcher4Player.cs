@@ -6,6 +6,7 @@ using System.Collections;
 using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 
 namespace Com.MyCompany.MyGame
 {
@@ -22,7 +23,7 @@ namespace Com.MyCompany.MyGame
         public CoinMovement[] coin;
 
 
-
+        public List<Player> LeftPlayers;
         public RectTransform player2;
         public RectTransform player3;
         public RectTransform player4;
@@ -129,7 +130,7 @@ namespace Com.MyCompany.MyGame
             {
                 if (NonLocal[i].CustomProperties.TryGetValue<int>("Image", out int image))
                 {
-                    Debug.LogErrorFormat(image.ToString());
+                    
                     playersp[i].gameObject.GetComponentInChildren<Image>().sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
                 }
                 opponents[i].text = NonLocal[i].NickName;
@@ -139,6 +140,44 @@ namespace Com.MyCompany.MyGame
 
         }
 
+
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            GameManager.gm.PlayerRemainingToPlay--;
+            Debug.LogErrorFormat(GameManager.gm.PlayerRemainingToPlay.ToString());
+            if (otherPlayer.CustomProperties.TryGetValue("Piece", out object pieceType))
+            {
+                string pieceTypeName = pieceType as string;
+
+                if (pieceTypeName == "YellowPiece")
+                {
+                    GameManager.gm.ManageRollingDice[2].isAllowed = false;
+                }
+                if (pieceTypeName == "RedPiece")
+                {
+                    GameManager.gm.ManageRollingDice[0].isAllowed = false;
+                }
+                if (pieceTypeName == "BluePiece")
+                {
+                    GameManager.gm.ManageRollingDice[1].isAllowed = false;
+                }
+                if (pieceTypeName == "GreenPiece")
+                {
+                    GameManager.gm.ManageRollingDice[3].isAllowed = false;
+                }
+                // Add similar conditions for other pieces if necessary
+            }
+         /*   LeftPlayers.Add(otherPlayer);*/
+        }
+
+
+        [PunRPC]
+        void RemovePlayer()
+        {
+            GameManager.gm.PlayerRemainingToPlay--;
+
+        }
 
 
         IEnumerator AnimateRectTransformPosY()

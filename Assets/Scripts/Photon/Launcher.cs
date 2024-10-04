@@ -6,6 +6,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using ExitGames.Client.Photon.StructWrapping;
+using System.Collections.Generic;
 
 namespace Com.MyCompany.MyGame
 {
@@ -30,6 +31,8 @@ namespace Com.MyCompany.MyGame
         public TMP_Text myName;
         public TMP_Text opponent;
 
+
+        public List<Player> LeftPlayers; 
 
         #region MonoBehaviour CallBacks
 
@@ -222,11 +225,9 @@ namespace Com.MyCompany.MyGame
 
         public override void OnDisconnected(DisconnectCause cause)
         {
+ 
             isConnecting = false;
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
-            {
 
-            }
         }
 
 
@@ -278,7 +279,42 @@ namespace Com.MyCompany.MyGame
         }
 
 
-    
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            photonView.RPC("RemovePlayer", RpcTarget.All);
+            if (otherPlayer.CustomProperties.TryGetValue("Piece", out object pieceType))
+            {
+                string pieceTypeName = pieceType as string;
+
+                if (pieceTypeName == "YellowPiece")
+                {
+                    GameManager.gm.ManageRollingDice[2].isAllowed = false;
+                }
+                if (pieceTypeName == "RedPiece")
+                {
+                    GameManager.gm.ManageRollingDice[0].isAllowed = false;
+                }
+                if (pieceTypeName == "BluePiece")
+                {
+                    GameManager.gm.ManageRollingDice[1].isAllowed = false;
+                }
+                if (pieceTypeName == "GreenPiece")
+                {
+                    GameManager.gm.ManageRollingDice[3].isAllowed = false;
+                }
+                // Add similar conditions for other pieces if necessary
+            }
+/*            LeftPlayers.Add(otherPlayer);*/
+        }
+
+
+        [PunRPC]
+        void RemovePlayer()
+        {
+            GameManager.gm.PlayerRemainingToPlay--;
+
+        }
+
         public void AssignOwnershipBasedOnPiece(Player player)
         {
             if (player.CustomProperties.TryGetValue("Piece", out object pieceType))
@@ -349,6 +385,7 @@ namespace Com.MyCompany.MyGame
     }
 
 
+   
 
 
 

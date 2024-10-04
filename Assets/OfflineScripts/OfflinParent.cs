@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class OfflinePathObjectParent : MonoBehaviour
 {
-  public OfflinePathPoint[] CommonPathPoint;
-  public OfflinePathPoint[] RedPathPoint;
-  public OfflinePathPoint[] BluePathPoint;
-  public OfflinePathPoint[] GreenPathPoint;
-  public OfflinePathPoint[] YellowPathPoint;
+    public OfflinePathPoint[] CommonPathPoint;
+    public OfflinePathPoint[] RedPathPoint;
+    public OfflinePathPoint[] BluePathPoint;
+    public OfflinePathPoint[] GreenPathPoint;
+    public OfflinePathPoint[] YellowPathPoint;
     public OfflinePathPoint[] BasePathPoint;
 
     [Header("Scale and Position")]
@@ -20,10 +20,10 @@ public class OfflinePathObjectParent : MonoBehaviour
 
 
 
-  /*  private void Update()
-    {
-        tM.text = GameManager.gm.redOutPlayers + "   " + GameManager.gm.yellowOutPlayers;
-    }*/
+    /*  private void Update()
+      {
+          tM.text = GameManager.gm.redOutPlayers + "   " + GameManager.gm.yellowOutPlayers;
+      }*/
 
     /*    private void Update()
         {

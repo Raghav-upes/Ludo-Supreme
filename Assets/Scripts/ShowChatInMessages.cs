@@ -39,6 +39,7 @@ public class ShowChatInMessages : MonoBehaviourPunCallbacks
             Debug.Log(chatMessage);
             photonView.RPC("BroadcastChatMessage", RpcTarget.All, PhotonNetwork.NickName, chatMessage);
         }
+        messageInputField.text = string.Empty;
     }
 
 

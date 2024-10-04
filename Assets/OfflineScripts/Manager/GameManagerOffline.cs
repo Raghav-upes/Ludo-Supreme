@@ -61,6 +61,13 @@ public class GameManagerOffline : MonoBehaviour
     List<OfflinePathPoint> playerOnPathPointList = new List<OfflinePathPoint>();
 
 
+    public bool isRedPlayerPlaying = false;
+    public bool isGreenPlayerPlaying = false;
+    public bool isBluePlayerPlaying = false;
+    public bool isYellowPlayerPlaying = false;
+
+    public byte PlayerRemainingToPlay=4;
+
     public GameObject LudoHome;
     private void Awake()
     {
@@ -89,6 +96,10 @@ public class GameManagerOffline : MonoBehaviour
                 HidePlayers(GameManagerOffline.gm.yelloPlayerPiece);
                 GameManagerOffline.gm.totalPlayerCanPlay = 2;
                 boardSetUP(0);
+                isBluePlayerPlaying = true;
+                isGreenPlayerPlaying = true;
+                GameManagerOffline.gm.ManageRollingDice[0].isAllowed = false;
+                GameManagerOffline.gm.ManageRollingDice[2].isAllowed = false;
             }
             else
             {
@@ -98,8 +109,12 @@ public class GameManagerOffline : MonoBehaviour
                 HidePlayers(GameManagerOffline.gm.greenPlayerPiece);
                 boardSetUP(1);
                 GameManagerOffline.gm.totalPlayerCanPlay = 2;
-
+                isRedPlayerPlaying = true;
+                isYellowPlayerPlaying = true;
+                GameManagerOffline.gm.ManageRollingDice[1].isAllowed = false;
+                GameManagerOffline.gm.ManageRollingDice[3].isAllowed = false;
             }
+            PlayerRemainingToPlay = 2;
         }
         else if (offlineUIManagerFour.enabled)
         {
@@ -108,9 +123,15 @@ public class GameManagerOffline : MonoBehaviour
             BluePlayerName.text = offlineUIManagerFour.BlueName;
             GreenPlayerName.text = offlineUIManagerFour.GreenName;
             YellowPlayerName.text = offlineUIManagerFour.YellowName;
+            isBluePlayerPlaying = true;
+            isGreenPlayerPlaying = true;
+            isRedPlayerPlaying = true;
+            isYellowPlayerPlaying = true;
+            PlayerRemainingToPlay = 4;
         }
         else if(offlineUIManagerThree.enabled)
         {
+            PlayerRemainingToPlay = 3;
             GameManagerOffline.gm.totalPlayerCanPlay = 3;
             if (offlineUIManagerThree.RedName == "PLON")
             {
@@ -120,25 +141,36 @@ public class GameManagerOffline : MonoBehaviour
                 GameManagerOffline.gm.ManageRollingDice[0].isAllowed = false;
                 GameManagerOffline.gm.ManageRollingDice[1].gameObject.SetActive(true);
                 GameManagerOffline.gm.ManageRollingDice[0].gameObject.SetActive(false);
+                isBluePlayerPlaying = true;
+                isGreenPlayerPlaying = true;
+                isYellowPlayerPlaying = true;
             }
             else if (offlineUIManagerThree.BlueName == "PLON")
             {
                 HidePlayers(GameManagerOffline.gm.bluePlayerPiece);
                 BlueRollDiceHome.SetActive(false);
                 GameManagerOffline.gm.ManageRollingDice[1].isAllowed = false;
+                isGreenPlayerPlaying = true;
+                isRedPlayerPlaying = true;
+                isYellowPlayerPlaying = true;
             }
             else if (offlineUIManagerThree.GreenName == "PLON")
             {
                 HidePlayers(GameManagerOffline.gm.greenPlayerPiece);
                 GreenRollDiceHome.SetActive(false);
                 GameManagerOffline.gm.ManageRollingDice[3].isAllowed = false;
-
+                isBluePlayerPlaying = true;
+                isRedPlayerPlaying = true;
+                isYellowPlayerPlaying = true;
             }
             else if (offlineUIManagerThree.YellowName == "PLON")
             {
                 HidePlayers(GameManagerOffline.gm.yelloPlayerPiece);
                 YellowRollDiceHome.SetActive(false);
                 GameManagerOffline.gm.ManageRollingDice[2].isAllowed = false;
+                isBluePlayerPlaying = true;
+                isGreenPlayerPlaying = true;
+                isRedPlayerPlaying = true;
             }
             RedPlayerName.text = offlineUIManagerThree.RedName;
             BluePlayerName.text = offlineUIManagerThree.BlueName;
@@ -244,7 +276,7 @@ public class GameManagerOffline : MonoBehaviour
 
             }
         }
-        else if (GameManagerOffline.gm.totalPlayerCanPlay == 2)
+        /*else if (GameManagerOffline.gm.totalPlayerCanPlay == 2)
         {
 
             if (offlineUIManagerTwo.gameMode == 0)
@@ -317,60 +349,96 @@ public class GameManagerOffline : MonoBehaviour
                     GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
                 }
             }
-        }
-        else if (GameManagerOffline.gm.totalPlayerCanPlay == 4)
+        }*/
+        else if (GameManagerOffline.gm.totalPlayerCanPlay > 1)
         {
-            for (int i = 0; i < 4; i++)
+            int currentDiceIndex=0;
+            int nextDiceIndex = 0;
+            for(int i=0;i<4;i++)
             {
-                if (i == 3)
+                if(GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i])
                 {
-                    nextDice = 0;
+                    currentDiceIndex = i;
+                    break;
                 }
-                else
-                {
-                    nextDice = i + 1;
-                }
-                i = passout(i);
 
-           
-                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i])
-                {
+            }
 
-                    GameManagerOffline.gm.ManageRollingDice[i].gameObject.SetActive(false);
-                    GameManagerOffline.gm.ManageRollingDice[nextDice].gameObject.SetActive(true);
+
+
+            if (currentDiceIndex == 3)
+            {
+                nextDiceIndex = 0;
+            }
+            else
+            {
+                nextDiceIndex = currentDiceIndex + 1;
+            }
+
+
+            while (!GameManagerOffline.gm.ManageRollingDice[nextDiceIndex].isAllowed)
+            {
+            
+                nextDiceIndex++;
+                if (nextDiceIndex > 3)
+                {
+                    nextDiceIndex = 0;
                 }
             }
+
+
+                GameManagerOffline.gm.ManageRollingDice[currentDiceIndex].gameObject.SetActive(false);
+            GameManagerOffline.gm.ManageRollingDice[nextDiceIndex].gameObject.SetActive(true);
+
+
+            /*for (int i = 0; i < 4; i++)
+            {
+               
+                *//*i = passout(i);
+*//*
+                // Check if the current dice is allowed to play
+                if (!GameManagerOffline.gm.ManageRollingDice[i].isAllowed)
+                {
+                    Debug.LogWarning(GameManagerOffline.gm.ManageRollingDice[i].name);
+                }
+
+                if (GameManagerOffline.gm.dice == GameManagerOffline.gm.ManageRollingDice[i])
+                {
+                    
+                }
+            }*/
         }
+
     }
 
     int passout(int index)
     {
         if (index == 0)
         {
-           if(GameManagerOffline.gm.redCompletePlayers == 4)
+            if (GameManagerOffline.gm.redCompletePlayers == 4)
             {
                 return index + 1;
             }
         }
         else if (index == 1)
         {
-            if (GameManagerOffline.gm.redCompletePlayers == 4)
+            if (GameManagerOffline.gm.blueCompletePlayers == 4)
             {
                 return index + 1;
             }
         }
-       else if (index == 2)
+        else if (index == 2)
         {
-            if (GameManagerOffline.gm.redCompletePlayers == 4)
+            if (GameManagerOffline.gm.yellowCompletePlayers == 4)
             {
                 return index + 1;
             }
         }
         else if (index == 3)
         {
-            if (GameManagerOffline.gm.redCompletePlayers == 4)
+            if (GameManagerOffline.gm.greenCompletePlayers == 4)
             {
-                return index + 1;
+                return 0;
             }
         }
         return index;

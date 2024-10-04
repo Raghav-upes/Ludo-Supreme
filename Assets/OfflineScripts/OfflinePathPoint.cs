@@ -52,22 +52,25 @@ public class OfflinePathPoint : MonoBehaviour
         if (playerPiece.name.Contains("Blue"))
         {
             GameManagerOffline.gm.blueOutPlayers -= 1;
+            GameManagerOffline.gm.blueCompletePlayers++;
          
         }
         else if (playerPiece.name.Contains("Red"))
         {
             GameManagerOffline.gm.redOutPlayers -= 1;
-           
+            GameManagerOffline.gm.redCompletePlayers++;
+
         }
         else if (playerPiece.name.Contains("Yellow"))
         {
             GameManagerOffline.gm.yellowOutPlayers -= 1;
-           
+            GameManagerOffline.gm.yellowCompletePlayers++;
         }
         else if (playerPiece.name.Contains("Green"))
         {
             GameManagerOffline.gm.greenOutPlayers -= 1;
-           
+            GameManagerOffline.gm.greenCompletePlayers++;
+
         }
     }
 
@@ -131,7 +134,7 @@ public class OfflinePathPoint : MonoBehaviour
         }
     }
 
-    void compled(OfflinePlayerPiece playerPiece)
+/*    void compled(OfflinePlayerPiece playerPiece)
     {
         if (playerPiece.name.Contains("Blue"))
         {
@@ -169,7 +172,7 @@ public class OfflinePathPoint : MonoBehaviour
                 ShowCeleberation();
 
         }
-    }
+    }*/
 
 
     void ShowCeleberation()

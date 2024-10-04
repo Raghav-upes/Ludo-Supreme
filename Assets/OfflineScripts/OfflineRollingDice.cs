@@ -80,8 +80,6 @@ public class OfflineRollingDice : MonoBehaviour
                 outPieces = GameManagerOffline.gm.greenOutPlayers;
             }
 
-            Debug.LogError(outPieces);
-
 
             if (PlayerCanNotMove())
             {

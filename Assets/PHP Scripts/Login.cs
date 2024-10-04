@@ -22,7 +22,7 @@ public class Login : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("name", username.text);
         form.AddField("password", password.text);
-        UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1/sqlconnect/login.php", form);
+        UnityWebRequest www = UnityWebRequest.Post("https://phpstack-1216068-4319747.cloudwaysapps.com/login.php", form);
         BasicUI.instance.showLoader();
         yield return www.SendWebRequest();
         BasicUI.instance.hideLoader();

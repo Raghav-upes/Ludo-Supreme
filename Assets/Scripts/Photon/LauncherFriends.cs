@@ -5,6 +5,9 @@ using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using System.Xml.Linq;
+using ExitGames.Client.Photon.StructWrapping;
+using UnityEngine.UI;
 
 namespace Com.MyCompany.MyGame
 {
@@ -24,9 +27,19 @@ namespace Com.MyCompany.MyGame
         public CoinMovement[] coin;
         public TMP_InputField joinCode;
         public GameObject PlayButton;
+        public TMP_Text MyName;
         private float duration = 1.0f; // Duration for one full move from 0 to 1245
 
         #region MonoBehaviour CallBacks
+
+
+        public TMP_Text[] opponents;
+
+        
+
+        public Image player2;
+        public Image player3;
+        public Image player4;
 
 
         public void openWhatsapp()
@@ -49,6 +62,10 @@ namespace Com.MyCompany.MyGame
             Debug.Log("Launcher: Not connected to Photon. Connecting...");
             isConnecting = PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = gameVersion;
+
+
+            MyName.text = DBManager.username;
+            SetPlayerNicknameAndProperties();
         }
 
         #endregion
@@ -69,6 +86,12 @@ namespace Com.MyCompany.MyGame
             {
                 Debug.LogWarning("Launcher: Not connected to Photon. Cannot create room.");
             }
+        }
+
+
+        public void BreackConnect()
+        {
+            PhotonNetwork.Disconnect();
         }
 
         public void JoinRoom()
@@ -120,6 +143,50 @@ namespace Com.MyCompany.MyGame
             }
         }
 
+
+
+        [PunRPC]
+        void SetImage()
+        {
+            Image[] playersp = { player2, player3, player4 };
+
+            foreach (var player in playersp)
+            {
+                if (player.transform.childCount > 1)
+                {
+                    // Start from index 1 to keep the first child
+                    for (int i = 1; i < player.transform.childCount; i++)
+                    {
+                        Destroy(player.transform.GetChild(i).gameObject);
+                    }
+                }
+            }
+            Player[] NonLocal = new Player[3];
+
+            Player[] players = PhotonNetwork.PlayerList;
+            for (int i = 0, j = 0; i < players.Length; i++)
+            {
+
+                if (!players[i].IsLocal)
+                {
+                    NonLocal[j] = players[i];
+                    j++;
+                }
+            }
+            for (int i = 0;NonLocal[i]!=null && i < NonLocal.Length; i++)
+            {
+                if (NonLocal[i].CustomProperties.TryGetValue<int>("Image", out int image))
+                {
+
+                    playersp[i].sprite = Resources.Load<SpriteCollection>("NewSpriteCollection").sprites[image];
+                }
+                opponents[i].text = NonLocal[i].NickName;
+
+
+            }
+
+        }
+
         #endregion
 
         #region MonoBehaviourPunCallbacks Callbacks
@@ -150,7 +217,7 @@ namespace Com.MyCompany.MyGame
             Debug.Log("Launcher: OnJoinedRoom called. Player has joined the room.");
             ConnectFriends.SetActive(true);
             Friends.SetActive(false);
-
+            photonView.RPC("SetImage", RpcTarget.All);
             if (PhotonNetwork.IsMasterClient)
             {
                 Debug.Log("lplplp");
@@ -178,6 +245,37 @@ namespace Com.MyCompany.MyGame
                 }
             }
         }
+
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            GameManager.gm.PlayerRemainingToPlay--;
+            Debug.LogErrorFormat(GameManager.gm.PlayerRemainingToPlay.ToString());
+            if (otherPlayer.CustomProperties.TryGetValue("Piece", out object pieceType))
+            {
+                string pieceTypeName = pieceType as string;
+
+                if (pieceTypeName == "YellowPiece")
+                {
+                    GameManager.gm.ManageRollingDice[2].isAllowed = false;
+                }
+                if (pieceTypeName == "RedPiece")
+                {
+                    GameManager.gm.ManageRollingDice[0].isAllowed = false;
+                }
+                if (pieceTypeName == "BluePiece")
+                {
+                    GameManager.gm.ManageRollingDice[1].isAllowed = false;
+                }
+                if (pieceTypeName == "GreenPiece")
+                {
+                    GameManager.gm.ManageRollingDice[3].isAllowed = false;
+                }
+                // Add similar conditions for other pieces if necessary
+            }
+            /*   LeftPlayers.Add(otherPlayer);*/
+        }
+
 
         [PunRPC]
         void AssignPieceScript()
@@ -277,6 +375,23 @@ namespace Com.MyCompany.MyGame
             }
         }
 
+
+        private void SetPlayerNicknameAndProperties()
+        {
+            // Set a unique player nickname
+            PhotonNetwork.NickName = DBManager.username;
+
+            // Define custom properties
+            ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable
+            {
+                { "Image", (int)DBManager.myImage },
+            };
+
+            // Set custom properties for the local player
+            PhotonNetwork.LocalPlayer.SetCustomProperties(customProperties);
+
+            Debug.Log("Launcher: Player nickname and custom properties set.");
+        }
         #endregion
     }
 }

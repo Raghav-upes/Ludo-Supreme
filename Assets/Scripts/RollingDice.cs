@@ -23,7 +23,7 @@ public class RollingDice : MonoBehaviourPunCallbacks, IPunObservable
 
     PlayerPiece outPlayerPiece;
 
-
+    public bool isAllowed = true;
 
 
 

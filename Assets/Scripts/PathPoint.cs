@@ -193,22 +193,25 @@ public class PathPoint : MonoBehaviourPunCallbacks,IPunObservable
         if (playerPiece.name.Contains("Blue"))
         {
             GameManager.gm.blueOutPlayers -= 1;
-         
+            GameManager.gm.blueCompletePlayers++;
         }
         else if (playerPiece.name.Contains("Red"))
         {
             GameManager.gm.redOutPlayers -= 1;
-           
+            GameManager.gm.redCompletePlayers++;
+
         }
         else if (playerPiece.name.Contains("Yellow"))
         {
             GameManager.gm.yellowOutPlayers -= 1;
-           
+            GameManager.gm.yellowCompletePlayers++;
+
         }
         else if (playerPiece.name.Contains("Green"))
         {
             GameManager.gm.greenOutPlayers -= 1;
-           
+            GameManager.gm.greenCompletePlayers++;
+
         }
     }
 
@@ -279,7 +282,7 @@ public class PathPoint : MonoBehaviourPunCallbacks,IPunObservable
             RescaleAndRepositioningAllPlayer();
         }
     }
-
+/*
     void compled(PlayerPiece playerPiece)
     {
         if (playerPiece.name.Contains("Blue"))
@@ -318,7 +321,7 @@ public class PathPoint : MonoBehaviourPunCallbacks,IPunObservable
                 ShowCeleberation();
 
         }
-    }
+    }*/
 
 
     void ShowCeleberation()

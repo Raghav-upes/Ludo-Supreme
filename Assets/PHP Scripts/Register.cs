@@ -37,7 +37,7 @@ public class Register : MonoBehaviour
         form.AddField("password", password.text);
         form.AddField("number", PhoneNumber.text);
         form.AddField("image", (int)playerImage);
-        UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1/sqlconnect/register.php", form);
+        UnityWebRequest www = UnityWebRequest.Post("https://phpstack-1216068-4319747.cloudwaysapps.com/register.php", form);
         BasicUI.instance.showLoader();
         yield return www.SendWebRequest();
         BasicUI.instance.hideLoader();
