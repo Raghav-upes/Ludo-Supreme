@@ -77,7 +77,8 @@ public class GameStartManager : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField("name", savedUsername);
         form.AddField("password", savedPassword);
-        UnityWebRequest www = UnityWebRequest.Post("https://phpstack-1216068-4319747.cloudwaysapps.com/login.php", form);
+        /*        UnityWebRequest www = UnityWebRequest.Post("https://phpstack-1216068-4319747.cloudwaysapps.com/login.php", form);*/
+        UnityWebRequest www = UnityWebRequest.Post("http://localhost/sqlconnect/login.php", form);
         BasicUI.instance.showLoader();
         yield return www.SendWebRequest();
         BasicUI.instance.hideLoader();

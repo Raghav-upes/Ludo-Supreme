@@ -224,7 +224,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
 
-/*    [PunRPC]
+    [PunRPC]
     void reduceOnePlayer(string str)
     {
 
@@ -266,7 +266,16 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             photonView.RPC("reduceOnePlayer", RpcTarget.All, "Yellow");
         }
-    }*/
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            photonView.RPC("reduceOnePlayer", RpcTarget.All, "Green");
+        }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            photonView.RPC("reduceOnePlayer", RpcTarget.All, "Blue");
+        }
+    }
 
 
     void HidePlayers(PlayerPiece[] playerPieces)

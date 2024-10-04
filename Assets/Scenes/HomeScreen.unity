@@ -10894,7 +10894,7 @@ MonoBehaviour:
   i: 2
   username: {fileID: 0}
   money: {fileID: 0}
-  loader: {fileID: 0}
+  loader: {fileID: 285078833}
   messageButton: {fileID: 0}
   sendButton: {fileID: 0}
   canvas: {fileID: 0}
@@ -15264,7 +15264,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 296.43335, y: -10}
+  m_AnchoredPosition: {x: 463.74103, y: -10}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &757988585
@@ -19106,7 +19106,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 296.43335, y: -121}
+  m_AnchoredPosition: {x: 463.74103, y: -121}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &914082956
@@ -19844,7 +19844,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 750.2888, y: -48.25003}
+  m_AnchoredPosition: {x: 1029.1351, y: -48.25003}
   m_SizeDelta: {x: 60, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &965337557
@@ -21876,7 +21876,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 326.57776, y: -48.25003}
+  m_AnchoredPosition: {x: 382.34702, y: -48.25003}
   m_SizeDelta: {x: 60, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1110978599
@@ -34412,7 +34412,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 538.4333, y: -48.25003}
+  m_AnchoredPosition: {x: 705.7411, y: -48.25003}
   m_SizeDelta: {x: 60, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1733902254

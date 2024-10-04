@@ -4,7 +4,9 @@ using Com.MyCompany.MyGame;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+
 public class Winning : MonoBehaviour
 {
     public GameObject WinningScreen;
@@ -13,7 +15,6 @@ public class Winning : MonoBehaviour
     public GameObject BlueWinner;
     public GameObject GreenWinner;
     public GameObject YellowWinner;
-
 
     public GameObject WinnerList;
 
@@ -24,69 +25,41 @@ public class Winning : MonoBehaviour
     byte YellowPosition = 0;
     byte BluePosition = 0;
 
+    int totalPrizeMoney = 100; // Example total prize money to be distributed
+
     void Start()
     {
-
     }
 
-    // Update is called once per frame
     void Update()
     {
+        int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
 
         if (GameManager.gm.ManageRollingDice[1].isAllowed && GameManager.gm.blueCompletePlayers == 4)
         {
-            GameObject WinningTag = GameManager.gm.ManageRollingDice[1].transform.parent.GetChild(3).gameObject;
-            WinningTag.SetActive(true);
-            BluePosition = position;
-
-            GameObject op = Instantiate(BlueWinner, WinnerList.transform);
-            op.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            op.transform.GetChild(2).GetComponent<TMP_Text>().text = GameManager.gm.BluePlayerName.text;
-            WinningTag.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            position++;
+            HandleWinning(GameManager.gm.BluePlayerName.text, BlueWinner, 1, playerCount);
             GameManager.gm.ManageRollingDice[1].isAllowed = false;
             GameManager.gm.PlayerRemainingToPlay--;
-
         }
         else if (GameManager.gm.ManageRollingDice[0].isAllowed && GameManager.gm.redCompletePlayers == 4)
         {
-            GameObject WinningTag = GameManager.gm.ManageRollingDice[0].transform.parent.GetChild(3).gameObject;
-            WinningTag.SetActive(true);
-            GameObject op = Instantiate(RedWinner, WinnerList.transform);
-            op.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            op.transform.GetChild(2).GetComponent<TMP_Text>().text = GameManager.gm.RedPlayerName.text;
-            WinningTag.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            RedPosition = position;
-            position++;
+            HandleWinning(GameManager.gm.RedPlayerName.text, RedWinner, 0, playerCount);
             GameManager.gm.ManageRollingDice[0].isAllowed = false;
             GameManager.gm.PlayerRemainingToPlay--;
         }
         else if (GameManager.gm.ManageRollingDice[2].isAllowed && GameManager.gm.yellowCompletePlayers == 4)
         {
-            GameObject WinningTag = GameManager.gm.ManageRollingDice[2].transform.parent.GetChild(3).gameObject;
-            WinningTag.SetActive(true);
-            GameObject op = Instantiate(YellowWinner, WinnerList.transform);
-            op.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            op.transform.GetChild(2).GetComponent<TMP_Text>().text = GameManager.gm.YellowPlayerName.text;
-            WinningTag.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            YellowPosition = position;
-            position++;
+            HandleWinning(GameManager.gm.YellowPlayerName.text, YellowWinner, 2, playerCount);
             GameManager.gm.ManageRollingDice[2].isAllowed = false;
             GameManager.gm.PlayerRemainingToPlay--;
         }
         else if (GameManager.gm.ManageRollingDice[3].isAllowed && GameManager.gm.greenCompletePlayers == 4)
         {
-            GameObject WinningTag = GameManager.gm.ManageRollingDice[3].transform.parent.GetChild(3).gameObject;
-            WinningTag.SetActive(true);
-            GameObject op = Instantiate(GreenWinner, WinnerList.transform);
-            op.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            op.transform.GetChild(2).GetComponent<TMP_Text>().text = GameManager.gm.GreenPlayerName.text;
-            WinningTag.GetComponentInChildren<TMP_Text>().text = position.ToString();
-            GreenPosition = position;
-            position++;
+            HandleWinning(GameManager.gm.GreenPlayerName.text, GreenWinner, 3, playerCount);
             GameManager.gm.ManageRollingDice[3].isAllowed = false;
             GameManager.gm.PlayerRemainingToPlay--;
         }
+
         if (GameManager.gm.PlayerRemainingToPlay == 1)
         {
             foreach (var k in GameManager.gm.ManageRollingDice)
@@ -94,26 +67,13 @@ public class Winning : MonoBehaviour
                 if (k.isAllowed)
                 {
                     if (k.name.Contains("Red"))
-                    {
-
                         GameManager.gm.redCompletePlayers = 4;
-                    }
                     if (k.name.Contains("Blue"))
-                    {
-
-                            GameManager.gm.blueCompletePlayers = 4;
-                    }
+                        GameManager.gm.blueCompletePlayers = 4;
                     if (k.name.Contains("Green"))
-                    {
- 
-                            GameManager.gm.greenCompletePlayers = 4;
-                    }
+                        GameManager.gm.greenCompletePlayers = 4;
                     if (k.name.Contains("Yellow"))
-                    {
-
-                            GameManager.gm.yellowCompletePlayers = 4;
-                    }
-
+                        GameManager.gm.yellowCompletePlayers = 4;
                 }
             }
 
@@ -121,6 +81,65 @@ public class Winning : MonoBehaviour
         }
     }
 
+    void HandleWinning(string playerName, GameObject winnerPrefab, int currentPosition, int playerCount)
+    {
+        GameObject WinningTag = GameManager.gm.ManageRollingDice[currentPosition].transform.parent.GetChild(3).gameObject;
+        WinningTag.SetActive(true);
+
+        GameObject op = Instantiate(winnerPrefab, WinnerList.transform);
+        op.GetComponentInChildren<TMP_Text>().text = position.ToString();
+        op.transform.GetChild(2).GetComponent<TMP_Text>().text = playerName;
+        WinningTag.GetComponentInChildren<TMP_Text>().text = position.ToString();
+        int prize = CalculatePrize(position, playerCount);
+        position++;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(UpdateBalance(playerName, prize));
+        }
+    }
+
+    int CalculatePrize(int position, int playerCount)
+    {
+        if (playerCount == 2)
+        {
+            // 1st player gets all, 2nd gets nothing
+            return position == 1 ? 2*totalPrizeMoney : 0;
+        }
+        else if (playerCount == 4)
+        {
+            if (position == 1)
+                return (int)(2*totalPrizeMoney * 0.5); // 50% to 1st
+            else if (position == 2)
+                return (int)(2*totalPrizeMoney * 0.3); // 30% to 2nd
+            else if (position == 3)
+                return (int)(2*totalPrizeMoney * 0.2); // 20% to 3rd
+            else
+                return 0; // 4th gets nothing
+        }
+        return 0; // Default case
+    }
+
+    IEnumerator UpdateBalance(string username, int amount)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("username", username);
+        form.AddField("amount", amount);
+       
+        UnityWebRequest www = UnityWebRequest.Post("http://localhost/sqlconnect/AmountUpdate.php", form);
+        BasicUI.instance.showLoader();
+        yield return www.SendWebRequest();
+        BasicUI.instance.hideLoader();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Failed to update balance for " + username + ": " + www.error);
+        }
+        else
+        {
+            Debug.Log("Balance updated for " + username + ": " + amount);
+        }
+
+    }
 
     public void ReturnToHomeScreen()
     {

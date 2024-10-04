@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using System.Xml.Linq;
 using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 namespace Com.MyCompany.MyGame
 {
@@ -126,11 +127,50 @@ namespace Com.MyCompany.MyGame
         IEnumerator delayAnima()
         {
             DontDestroyOnLoad(this.gameObject);
-            yield return new WaitForSeconds(1f);
-            PhotonNetwork.LoadLevel("SampleScene");
-            photonView.RPC("AssignPieceScript", RpcTarget.All);
-            photonView.RPC("AssignOwnershipToAllPlayers", RpcTarget.All);
+
+            // Wait for the total balance to be updated and ensure it's successful before proceeding
+            bool isAmountDeducted = false;
+            yield return StartCoroutine(UpdateTotalBalance(-100, result => isAmountDeducted = result)); // Deduct 100 from the total balance
+
+            if (isAmountDeducted)
+            {
+                yield return new WaitForSeconds(1f);
+                // Continue only if the balance update was successful
+                PhotonNetwork.LoadLevel("SampleScene");
+                photonView.RPC("AssignPieceScript", RpcTarget.All);
+                photonView.RPC("AssignOwnershipToAllPlayers", RpcTarget.All);
+            }
+            else
+            {
+                Debug.LogError("Failed to deduct amount. Stopping further execution.");
+            }
         }
+
+        // Coroutine to update total balance
+        IEnumerator UpdateTotalBalance(int amount, System.Action<bool> callback)
+        {
+            string username = DBManager.username; // Assuming the username is stored in PhotonNetwork.NickName
+            WWWForm form = new WWWForm();
+            form.AddField("username", username);
+            form.AddField("amount", amount); // Sending negative amount (-100) to deduct
+
+            UnityWebRequest www = UnityWebRequest.Post("http://localhost/sqlconnect/AmountUpdate.php", form);
+            BasicUI.instance.showLoader();
+
+            yield return www.SendWebRequest();
+            BasicUI.instance.hideLoader();
+            if (www.downloadHandler.text[0] != '0')
+            {
+                Debug.LogError("Failed to update balance for " + username + ": " + www.error);
+                callback(false); // Indicate failure
+            }
+            else
+            {
+                Debug.Log("Balance updated for " + username + ": " + amount);
+                callback(true); // Indicate success
+            }
+        }
+
 
         [PunRPC]
         void coinMove()
